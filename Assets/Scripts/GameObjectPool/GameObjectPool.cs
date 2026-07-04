@@ -10,14 +10,14 @@ public class GameObjectPool<T> where T : Component, IPoolable
     private readonly Queue<T> pool = new();
     private readonly int _initialSize;
 
-    public GameObjectPool(T prefab, int initialSize = 10, string poolName = null)
+    public GameObjectPool(T prefab, int initialMaxSize, string poolName = null)
     {
         if (prefab == null)
         {
             Debug.LogWarning($"{prefab} is null!");
         }
         _prefab = prefab;
-        _initialSize = Mathf.Max(initialSize, 1);
+        _initialSize = Mathf.Max(initialMaxSize, 1);
         string wrapperName = string.IsNullOrEmpty(poolName) ? $"{typeof(T).Name} Pool" : poolName;
         var wrapperGOP = new GameObject(wrapperName);
         parentContainer = wrapperGOP.transform;
