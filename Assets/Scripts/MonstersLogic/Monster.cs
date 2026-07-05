@@ -19,12 +19,17 @@ public class Monster : MonoBehaviour, IPoolable, IDamageable
 		_pool = pool;
 	}
 	
-	public void OnEnable() {
-
+	public void OnSpawn()
+	{
+		
 	}
-	public void OnDisable() {
+	public void OnDespawn() 
+	{
 		_moveTarget = null;
-		_pool.ReturnObject(this);
+		if (_pool != null)
+		{
+			_pool.ReturnObject(this);
+		}
 	}
 
 	public void SetMoveTarget(GameObject target) 
@@ -53,7 +58,7 @@ public class Monster : MonoBehaviour, IPoolable, IDamageable
 		_hp -= damage;
 		if (_hp <= 0f) {
 			_hp = 0f;
-			OnDisable();
+			OnDespawn();
 			IsDead();
 		}
 	}

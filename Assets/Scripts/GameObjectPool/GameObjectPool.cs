@@ -43,6 +43,7 @@ public class GameObjectPool<T> where T : Component, IPoolable
         pool.Enqueue(obj);
         return obj;
     }
+
     public T GetObject()
     {
         T obj;
@@ -52,27 +53,25 @@ public class GameObjectPool<T> where T : Component, IPoolable
         }
         else
         {
-            Debug.LogWarning($"Pool {typeof(T).Name} is empty!");
             obj = CreateNewGameObject();
         }
 
         if (obj.gameObject.activeSelf == true)
         {
-            Debug.LogWarning($"[GameObjectPool] {obj.gameObject.name} is already active!");
             return obj;
         }
         else
         {
             obj.gameObject.SetActive(true);
         }
-        obj.OnEnable();
+        obj.OnSpawn();
         return obj;
     }
     public void ReturnObject(T obj)
     {
         if (obj == null)
         {
-            Debug.LogWarning($"Returned object is null!");
+            Debug.Log($"Returned object is null!");
             return;
         }
 

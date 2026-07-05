@@ -124,10 +124,10 @@ public class Towers : MonoBehaviour, IPoolable
         _lastShotTime = Time.time;
     }
 
-    public void OnEnable() {
+    public void OnSpawn() {
 	}
 
-	public void OnDisable() {
+	public void OnDespawn() {
 	}
 
     public Transform Transform => transform;
