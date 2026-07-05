@@ -8,13 +8,13 @@ public class GameObjectPool<T> where T : Component, IPoolable
     private readonly T _prefab;
     private readonly Transform parentContainer;
     private readonly Queue<T> pool = new();
-    private readonly int _initialSize;
+    private int _initialSize;
 
     public GameObjectPool(T prefab, int initialMaxSize, string poolName = null)
     {
         if (prefab == null)
         {
-            Debug.LogWarning($"{prefab} is null!");
+            Debug.LogError($"{prefab} is null");
         }
         _prefab = prefab;
         _initialSize = Mathf.Max(initialMaxSize, 1);
@@ -22,21 +22,18 @@ public class GameObjectPool<T> where T : Component, IPoolable
         var wrapperGOP = new GameObject(wrapperName);
         parentContainer = wrapperGOP.transform;
         parentContainer.SetParent(null);
+        Prewarm();
     }
 
-    private void Start()
+    private void Prewarm()
     {
-        Prewarm(_initialSize);
-    }
-
-    private void Prewarm(int size)
-    {
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i != _initialSize; i++)
         {
-            CreateNewGameObject();
+            CreateNewInstance();
         }
     }
-    private T CreateNewGameObject()
+
+    private T CreateNewInstance()
     {
         T obj = GameObject.Instantiate(_prefab, parentContainer);
         obj.gameObject.SetActive(false);
@@ -53,29 +50,20 @@ public class GameObjectPool<T> where T : Component, IPoolable
         }
         else
         {
-            obj = CreateNewGameObject();
+            obj = CreateNewInstance();
         }
-
-        if (obj.gameObject.activeSelf == true)
-        {
-            return obj;
-        }
-        else
-        {
-            obj.gameObject.SetActive(true);
-        }
+        obj.gameObject.SetActive(true);
         obj.OnSpawn();
         return obj;
     }
+
     public void ReturnObject(T obj)
     {
         if (obj == null)
         {
-            Debug.Log($"Returned object is null!");
+            Debug.LogError($"Returned object is null!");
             return;
         }
-
-        //obj.OnDisable();
         obj.gameObject.SetActive(false);
         obj.transform.SetParent(parentContainer);
         pool.Enqueue(obj);

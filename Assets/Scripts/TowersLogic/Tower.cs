@@ -40,8 +40,10 @@ public class Towers : MonoBehaviour, IPoolable
         }
         if (HasValidTarget())
         {
-            
-            AimTarget();
+            if (_currentTower.towerGunHeadMoveable)
+            {
+                AimTarget();
+            }
             if (Time.time > _lastShotTime + _currentTower.fireSpeed)
             {
                 TryShoot();
@@ -49,7 +51,7 @@ public class Towers : MonoBehaviour, IPoolable
         }
         else 
         {
-            AimDefaultPosition();
+            AimReset();
         }
     }
 
@@ -110,7 +112,7 @@ public class Towers : MonoBehaviour, IPoolable
         }
     }
 
-    private void AimDefaultPosition()
+    private void AimReset()
     {
         transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(defaultRotationEuler), Time.deltaTime * _currentTower.rotationSpeed);
     }
