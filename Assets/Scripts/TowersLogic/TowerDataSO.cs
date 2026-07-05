@@ -9,6 +9,7 @@ public class TowerDataSO : ScriptableObject
     public float damage = 1f;
     public float fireRange = 10f;
     public float fireSpeed = 2f;
+    public GameObject projectilePrefab;
 
     [Header("Tower Upgrade Data")]
     public bool firegunMoveable = false;

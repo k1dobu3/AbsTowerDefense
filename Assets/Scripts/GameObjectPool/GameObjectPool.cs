@@ -52,7 +52,15 @@ public class GameObjectPool<T> where T : Component, IPoolable
             obj = CreateNewGameObject();
         }
 
-        obj.gameObject.SetActive(true);
+        if (obj.gameObject.activeSelf == true)
+        {
+            Debug.LogWarning($"[GameObjectPool] {obj.gameObject.name} is already active!");
+            return obj;
+        }
+        else
+        {
+            obj.gameObject.SetActive(true);
+        }
         obj.OnEnable();
         return obj;
     }

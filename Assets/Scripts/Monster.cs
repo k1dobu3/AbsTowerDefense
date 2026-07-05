@@ -3,11 +3,12 @@ using System.Collections;
 
 public class Monster : MonoBehaviour, IPoolable {
 
-	public GameObject m_moveTarget;
-	public float m_speed = 0.1f;
-	public int m_maxHP = 30;
-	const float m_reachDistance = 0.3f;
-	public int m_hp;
+	private int _tokenPrice = 1;
+	public GameObject _moveTarget;
+	public float _speed = 0.1f;
+	public int _maxHP = 30;
+	const float _reachDistance = 0.3f;
+	public int _hp;
 	private GameObjectPool<Monster> _pool;
 
 	public void SetPool(GameObjectPool<Monster> pool) 
@@ -16,10 +17,10 @@ public class Monster : MonoBehaviour, IPoolable {
 	}
 	
 	public void OnEnable() {
-		m_hp = m_maxHP;
+		_hp = _maxHP;
 	}
 	public void OnDisable() {
-		m_moveTarget = null;
+		_moveTarget = null;
 		if (_pool != null) 
 		{
 			_pool.ReturnObject(this);
@@ -33,21 +34,21 @@ public class Monster : MonoBehaviour, IPoolable {
 
 	public void SetMoveTarget(GameObject target) 
 	{
-		m_moveTarget = target;
+		_moveTarget = target;
 	}
 
 	void Update () {
-		if (m_moveTarget == null)
+		if (_moveTarget == null)
 			return;
 		
-		if (Vector3.Distance (transform.position, m_moveTarget.transform.position) <= m_reachDistance) {
+		if (Vector3.Distance (transform.position, _moveTarget.transform.position) <= _reachDistance) {
 			OnDisable();
 			return;
 		}
 
-		var translation = m_moveTarget.transform.position - transform.position;
-		if (translation.magnitude > m_speed) {
-			translation = translation.normalized * m_speed;
+		var translation = _moveTarget.transform.position - transform.position;
+		if (translation.magnitude > _speed) {
+			translation = translation.normalized * 	_speed;
 		}
 		transform.Translate (translation);
 	}

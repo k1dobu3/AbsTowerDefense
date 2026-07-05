@@ -10,6 +10,7 @@ public class TowerGun : ITowerStrategy
     {
         _tower = tower;
         _towerData = towerData;
+        Debug.Log($"Init: {towerData.name}");
     }
 
     public void Update()
@@ -28,7 +29,10 @@ public class TowerGun : ITowerStrategy
 
     private void FindTarget()
     {
-        // нужно доделать реализацию поиска цели!!!
+        Vector3 timeTarget = new Vector3(-5.17f, 0.5f, 14.04f);
+        Vector3 currentPosition = _tower.Transform.position;
+        float distance = Vector3.Distance(currentPosition, timeTarget);
+        Debug.Log($"Distance to target: {distance}");
     }
 
     private void AimTarget()
