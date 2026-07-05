@@ -39,11 +39,11 @@ public class Towers : MonoBehaviour, IPoolable
             FindTarget();
             return;
         }
-        // else
-        // {
-        //     AimTarget();
-        //     TryShootAtTarget();
-        // }
+        else
+        {
+            AimTarget();
+            //TryShootAtTarget();
+        }
     }
 
     private void FindTarget()
@@ -51,7 +51,39 @@ public class Towers : MonoBehaviour, IPoolable
         Vector3 timeTarget = new Vector3(-5.17f, 0.5f, 14.04f);
         Vector3 currentPosition = transform.position;
         float distance = Vector3.Distance(currentPosition, timeTarget);
-        //Debug.Log($"Distance to target: {distance}");
+
+        if (distance <= _currentTower.fireRange)
+        {
+            _target = GameObject.FindWithTag("Monster")?.transform;
+            Debug.Log($"[Towers] Distance to target: {_target?.transform.position}, Target found: {_target?.name}");
+        }
+        else
+        {
+            _target = null;
+            Debug.Log($"[Towers] Distance to target: {distance}, possible range: {_currentTower.fireRange}, Target not found");
+        }
+    }
+
+
+    private float _minAimAngle = -20f;
+    private float _maxAimAngle = 45f;
+
+    private void AimTarget()
+    {
+        Vector3 direction = _target.position - transform.position;
+
+        direction.y = 0;
+
+        if (direction != Vector3.zero)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+
+            float targetY = targetRotation.eulerAngles.y;
+            float currentY = transform.rotation.eulerAngles.y;
+            float newY = Mathf.LerpAngle(currentY, targetY, Time.deltaTime * _currentTower.rotationSpeed);
+
+            transform.rotation = Quaternion.Euler(0, newY, 0);
+        }
     }
 
     // void Update () 

@@ -5,17 +5,17 @@ using Unity.VisualScripting;
 public class Spawner : MonoBehaviour
 {
 	[SerializeField] public float _interval = 3;
-	[SerializeField] private float _speed = 0.2f;
 	[SerializeField] private int _maxPoolSize = 10;
 	[SerializeField] private GameObject _moveTarget;
-	[SerializeField] private Monster _enemyPrefab;
+	[SerializeField] 
+	private MonsterDataSO _monsterData;
 	private float _lastSpawn = -1;
 	private GameObjectPool<Monster> _monsterPool;
 
 
 	public void Awake()
 	{
-		_monsterPool = new GameObjectPool<Monster>(_enemyPrefab, _maxPoolSize, "Monster Pool");
+		_monsterPool = new GameObjectPool<Monster>(_monsterData.monsterPrefab, _maxPoolSize, "Monster Pool");
 	}
 
 	public void Start()
@@ -36,8 +36,9 @@ public class Spawner : MonoBehaviour
 	{
 		Monster monster = _monsterPool.GetObject();
 		monster.transform.position = transform.position;
-		monster._moveTarget = _moveTarget;
-		monster._speed = _speed;
+		monster.SetMoveTarget(_moveTarget);
+		monster.speed = _monsterData.speed;
+		monster.hp = _monsterData.maxHP;
 		monster.SetPool(_monsterPool);
 
 		if (monster.GetComponent<Rigidbody>() == null)

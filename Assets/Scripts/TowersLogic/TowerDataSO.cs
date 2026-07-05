@@ -13,4 +13,5 @@ public class TowerDataSO : ScriptableObject
 
     [Header("Tower Upgrade Data")]
     public bool firegunMoveable = false;
+    public float rotationSpeed = 5f;
 }

@@ -5,11 +5,13 @@ public class Monster : MonoBehaviour, IPoolable {
 
 	private int _tokenPrice = 1;
 	public GameObject _moveTarget;
-	public float _speed = 0.1f;
-	public int _maxHP = 30;
-	const float _reachDistance = 0.3f;
-	public int _hp;
+	private float _speed = 0.1f;
+	private float _hp = 100;
+	const float _reachDistance = 0.5f;
 	private GameObjectPool<Monster> _pool;
+
+	public float speed { get { return _speed; } set { _speed = value; } }
+	public float hp { get { return _hp; } set { _hp = value; } }
 
 	public void SetPool(GameObjectPool<Monster> pool) 
 	{
@@ -17,7 +19,7 @@ public class Monster : MonoBehaviour, IPoolable {
 	}
 	
 	public void OnEnable() {
-		_hp = _maxHP;
+
 	}
 	public void OnDisable() {
 		_moveTarget = null;
