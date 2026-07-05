@@ -15,10 +15,7 @@ public class CannonProjectile : MonoBehaviour {
 		if (monster == null)
 			return;
 
-		monster._hp -= _damage;
-		if (monster._hp <= 0) {
-			Destroy (monster.gameObject);
-		}
+		monster.TakeDamage (_damage);
 		Destroy (gameObject);
 	}
 }

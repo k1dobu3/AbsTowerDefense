@@ -27,10 +27,7 @@ public class GuidedProjectile : MonoBehaviour {
 		if (monster == null)
 			return;
 
-		monster._hp -= m_damage;
-		if (monster._hp <= 0) {
-			monster.OnDisable();
-		}
+		monster.TakeDamage (m_damage);
 		Destroy (gameObject);
 	}
 }

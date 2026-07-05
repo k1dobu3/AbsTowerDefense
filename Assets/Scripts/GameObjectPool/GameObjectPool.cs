@@ -24,12 +24,16 @@ public class GameObjectPool<T> where T : Component, IPoolable
         parentContainer.SetParent(null);
     }
 
-    private void Prewarm()
+    private void Start()
     {
-        for (int i = 0; i < _initialSize; i++)
+        Prewarm(_initialSize);
+    }
+
+    private void Prewarm(int size)
+    {
+        for (int i = 0; i < size; i++)
         {
             CreateNewGameObject();
-            Debug.Log("добавили");
         }
     }
     private T CreateNewGameObject()

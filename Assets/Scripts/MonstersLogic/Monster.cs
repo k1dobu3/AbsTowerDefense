@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Monster : MonoBehaviour, IPoolable {
+public class Monster : MonoBehaviour, IPoolable, IDamageable 
+{
 
 	private int _tokenPrice = 1;
 	public GameObject _moveTarget;
@@ -23,15 +24,7 @@ public class Monster : MonoBehaviour, IPoolable {
 	}
 	public void OnDisable() {
 		_moveTarget = null;
-		if (_pool != null) 
-		{
-			_pool.ReturnObject(this);
-			Debug.Log($"[Monster] {gameObject.GetEntityId()} is disabled and returned to pool");
-		}
-		else 
-		{
-			Debug.LogWarning($"[Monster] {gameObject.GetEntityId()} is disabled but pool is null");
-		}
+		_pool.ReturnObject(this);
 	}
 
 	public void SetMoveTarget(GameObject target) 
@@ -44,7 +37,7 @@ public class Monster : MonoBehaviour, IPoolable {
 			return;
 		
 		if (Vector3.Distance (transform.position, _moveTarget.transform.position) <= _reachDistance) {
-			OnDisable();
+			TakeDamage(_hp);
 			return;
 		}
 
@@ -53,5 +46,20 @@ public class Monster : MonoBehaviour, IPoolable {
 			translation = translation.normalized * 	_speed;
 		}
 		transform.Translate (translation);
+	}
+
+	public void TakeDamage(float damage) 
+	{
+		_hp -= damage;
+		if (_hp <= 0f) {
+			_hp = 0f;
+			OnDisable();
+			IsDead();
+		}
+	}
+
+	public bool IsDead()
+	{
+		return _hp <= 0;
 	}
 }
