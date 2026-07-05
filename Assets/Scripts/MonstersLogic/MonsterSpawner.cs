@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 using Unity.VisualScripting;
 
 public class Spawner : MonoBehaviour
@@ -35,15 +34,18 @@ public class Spawner : MonoBehaviour
 	public void SpawnMonster()
 	{
 		Monster monster = _monsterPool.GetObject();
-		monster.transform.position = transform.position;
-		monster.SetMoveTarget(_moveTarget);
-		monster.speed = _monsterData.speed;
-		monster.hp = _monsterData.maxHP;
-		monster.SetPool(_monsterPool);
+		if (monster != null)
+		{
+			monster.transform.position = transform.position;
+			monster.SetMoveTarget(_moveTarget);
+			monster.speed = _monsterData.speed;
+			monster.hp = _monsterData.maxHP;
+			monster.SetPool(_monsterPool);
 
-		if (monster.GetComponent<Rigidbody>() == null)
+			if (monster.GetComponent<Rigidbody>() == null)
 		{
 			monster.AddComponent<Rigidbody>().useGravity = false;
+		}
 		}
 	}
 

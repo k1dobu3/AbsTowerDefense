@@ -43,17 +43,16 @@ public class GameObjectPool<T> where T : Component, IPoolable
 
     public T GetObject()
     {
-        T obj;
+        T obj = null;
         if (pool.Count > 0)
         {
             obj = pool.Dequeue();
         }
-        else
+        if (obj != null)
         {
-            obj = CreateNewInstance();
+            obj.gameObject.SetActive(true);
+            obj.OnSpawn();
         }
-        obj.gameObject.SetActive(true);
-        obj.OnSpawn();
         return obj;
     }
 

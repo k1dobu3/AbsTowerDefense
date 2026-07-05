@@ -3,8 +3,6 @@ using System.Collections;
 
 public class Monster : MonoBehaviour, IPoolable, IDamageable 
 {
-
-	private int _tokenPrice = 1;
 	public GameObject _moveTarget;
 	private float _speed = 0.1f;
 	private float _hp = 100;
@@ -26,10 +24,8 @@ public class Monster : MonoBehaviour, IPoolable, IDamageable
 	public void OnDespawn() 
 	{
 		_moveTarget = null;
-		if (_pool != null)
-		{
-			_pool.ReturnObject(this);
-		}
+		_pool.ReturnObject(this);
+
 	}
 
 	public void SetMoveTarget(GameObject target) 

@@ -1,19 +1,17 @@
-using Unity.VisualScripting;
+using System.Collections;
 using UnityEngine;
 
 public class Towers : MonoBehaviour, IPoolable
 {
     [Header("Default Aim Line")]
-    [SerializeField] 
+    [SerializeField]
     private Vector3 defaultRotationEuler = new Vector3(0, 0, 0);
-    
-    [SerializeField] 
+    [Header("Data of tower type")]
+    [SerializeField]
     private TowerDataSO _data;
 
     private TowerDataSO _currentTower;
-    private float _currentHP;
     private Transform _target;
-    private float _lastShotTime;
 
     private void Awake()
     {
@@ -25,6 +23,7 @@ public class Towers : MonoBehaviour, IPoolable
         }
 
         Initaialize(_data);
+        StartCoroutine(Shoot());
     }
 
     public void Initaialize(TowerDataSO data)
@@ -32,7 +31,7 @@ public class Towers : MonoBehaviour, IPoolable
         _currentTower = data;
     }
 
-    public void Update ()
+    public void Update()
     {
         if (!HasValidTarget())
         {
@@ -44,12 +43,8 @@ public class Towers : MonoBehaviour, IPoolable
             {
                 AimTarget();
             }
-            if (Time.time > _lastShotTime + _currentTower.fireSpeed)
-            {
-                TryShoot();
-            }        
         }
-        else 
+        else
         {
             AimReset();
         }
@@ -83,14 +78,14 @@ public class Towers : MonoBehaviour, IPoolable
         foreach (var col in colliders)
         {
             if (col.CompareTag("Monster"))
-        {
-            float distance = Vector3.Distance(transform.position, col.transform.position);
-            if (distance < minDistance)
             {
-                minDistance = distance;
-                nearestTarget = col.transform;
+                float distance = Vector3.Distance(transform.position, col.transform.position);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    nearestTarget = col.transform;
+                }
             }
-        }
         }
         return nearestTarget;
     }
@@ -117,20 +112,26 @@ public class Towers : MonoBehaviour, IPoolable
         transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(defaultRotationEuler), Time.deltaTime * _currentTower.rotationSpeed);
     }
 
-    private void TryShoot()
+    private IEnumerator Shoot()
     {
-        if (_target == null)
+        while (true)
         {
-            return;
+            if  (GetNearestMonsterInRange() != null)
+            {
+                Instantiate(_currentTower.projectilePrefab, transform.position, transform.rotation); //заменить на пул, добавит поворот к цели
+            }
+
+            yield return new WaitForSeconds(_currentTower.fireSpeed);
         }
-        _lastShotTime = Time.time;
     }
 
-    public void OnSpawn() {
-	}
+    public void OnSpawn()
+    {
+    }
 
-	public void OnDespawn() {
-	}
+    public void OnDespawn()
+    {
+    }
 
     public Transform Transform => transform;
 }
