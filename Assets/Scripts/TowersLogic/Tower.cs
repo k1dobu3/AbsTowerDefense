@@ -92,18 +92,26 @@ public class Towers : MonoBehaviour, IPoolable
 
     private void AimTarget()
     {
-        Vector3 direction = _target.position - transform.position;
-        direction.y = 0;
+        // Vector3 direction = _target.position - transform.position;
+        // direction.y = 0;
 
-        if (direction != Vector3.zero)
+        float timeToTarget = _distanceToActualTarget/_currentTower.projectileSpeed;
+
+        Rigidbody targetRB = _target.GetComponent<Rigidbody>();
+        Vector3 targetVelocity = targetRB != null ? targetRB.linearVelocity : Vector3.zero;
+        Vector3 predictionTargetPosition = _target.position + (targetVelocity * timeToTarget);
+        Vector3 aimDirection = predictionTargetPosition - transform.position;
+        aimDirection.y = 0;
+
+        if (aimDirection != Vector3.zero)
         {
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
+            Quaternion targetRotation = Quaternion.LookRotation(aimDirection);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * _currentTower.rotationSpeed);
+            // float targetY = targetRotation.eulerAngles.y;
+            // float currentY = transform.rotation.eulerAngles.y;
+            // float newY = Mathf.LerpAngle(currentY, targetY, Time.deltaTime * _currentTower.rotationSpeed);
 
-            float targetY = targetRotation.eulerAngles.y;
-            float currentY = transform.rotation.eulerAngles.y;
-            float newY = Mathf.LerpAngle(currentY, targetY, Time.deltaTime * _currentTower.rotationSpeed);
-
-            transform.rotation = Quaternion.Euler(0, newY, 0);
+            // transform.rotation = Quaternion.Euler(0, newY, 0);
         }
     }
 

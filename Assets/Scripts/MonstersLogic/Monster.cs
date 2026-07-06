@@ -19,8 +19,8 @@ public class Monster : MonoBehaviour, IPoolable, IDamageable
 	
 	public void OnSpawn()
 	{
-		
 	}
+	
 	public void OnDespawn() 
 	{
 		_moveTarget = null;
@@ -41,12 +41,15 @@ public class Monster : MonoBehaviour, IPoolable, IDamageable
 			TakeDamage(_hp);
 			return;
 		}
-
-		var translation = _moveTarget.transform.position - transform.position;
-		if (translation.magnitude > _speed) {
-			translation = translation.normalized * 	_speed;
+		else
+		{
+			PawnMove();
 		}
-		transform.Translate (translation);
+	}
+
+	private void PawnMove()
+	{
+		transform.position = Vector3.MoveTowards(transform.position, _moveTarget.transform.position, Time.deltaTime * _speed);
 	}
 
 	public void TakeDamage(float damage) 
