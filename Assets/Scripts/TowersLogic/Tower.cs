@@ -12,6 +12,7 @@ public class Towers : MonoBehaviour, IPoolable
 
     private TowerDataSO _currentTower;
     private Transform _target;
+    private float _distanceToActualTarget;
 
     private void Awake()
     {
@@ -31,7 +32,7 @@ public class Towers : MonoBehaviour, IPoolable
         _currentTower = data;
     }
 
-    public void Update()
+    public void LateUpdate()
     {
         if (!HasValidTarget())
         {
@@ -73,16 +74,15 @@ public class Towers : MonoBehaviour, IPoolable
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, _currentTower.fireRange);
         Transform nearestTarget = null;
-        float minDistance = float.MaxValue;
 
         foreach (var col in colliders)
         {
             if (col.CompareTag("Monster"))
             {
-                float distance = Vector3.Distance(transform.position, col.transform.position);
-                if (distance < minDistance)
+                float distance = (transform.position - col.transform.position).magnitude;
+                if (distance < _currentTower.fireRange)
                 {
-                    minDistance = distance;
+                    _distanceToActualTarget = distance;
                     nearestTarget = col.transform;
                 }
             }
@@ -121,7 +121,7 @@ public class Towers : MonoBehaviour, IPoolable
                 Instantiate(_currentTower.projectilePrefab, transform.position, transform.rotation); //заменить на пул, добавит поворот к цели
             }
 
-            yield return new WaitForSeconds(_currentTower.fireSpeed);
+            yield return new WaitForSeconds(_currentTower.fireSpeedCD);
         }
     }
 
