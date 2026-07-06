@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class Towers : MonoBehaviour, IPoolable
@@ -13,6 +12,7 @@ public class Towers : MonoBehaviour, IPoolable
     private TowerDataSO _currentTower;
     private Transform _target;
     private float _distanceToActualTarget;
+    private IShooteable _shooter;
 
     private void Awake()
     {
@@ -24,7 +24,7 @@ public class Towers : MonoBehaviour, IPoolable
         }
 
         Initaialize(_data);
-        StartCoroutine(Shoot());
+        _shooter = GetComponent<IShooteable>();
     }
 
     public void Initaialize(TowerDataSO data)
@@ -43,6 +43,7 @@ public class Towers : MonoBehaviour, IPoolable
             if (_currentTower.towerGunHeadMoveable)
             {
                 AimTarget();
+                _shooter.TryShoot(_currentTower.fireSpeedCD, _target);
             }
         }
         else
@@ -118,19 +119,6 @@ public class Towers : MonoBehaviour, IPoolable
     private void AimReset()
     {
         transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(defaultRotationEuler), Time.deltaTime * _currentTower.rotationSpeed);
-    }
-
-    private IEnumerator Shoot()
-    {
-        while (true)
-        {
-            if  (GetNearestMonsterInRange() != null)
-            {
-                Instantiate(_currentTower.projectilePrefab, transform.position, transform.rotation); //заменить на пул, добавит поворот к цели
-            }
-
-            yield return new WaitForSeconds(_currentTower.fireSpeedCD);
-        }
     }
 
     public void OnSpawn()
