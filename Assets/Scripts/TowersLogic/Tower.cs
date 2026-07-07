@@ -11,8 +11,11 @@ public class Towers : MonoBehaviour, IPoolable
 
     private TowerDataSO _currentTower;
     private Transform _target;
-    private float _distanceToActualTarget;
+    private float _projectileSpeed;
+    private float _timeToTarget;
     private IShooteable _shooter;
+    private ITargetable _targetFinder;
+    private IAim _targetAim;
 
     private void Awake()
     {
@@ -22,33 +25,36 @@ public class Towers : MonoBehaviour, IPoolable
             enabled = false;
             return;
         }
-
         Initaialize(_data);
-        _shooter = GetComponent<IShooteable>();
     }
 
     public void Initaialize(TowerDataSO data)
     {
         _currentTower = data;
+        _shooter = GetComponent<IShooteable>();
+        _targetFinder = GetComponent<ITargetable>();
+        _targetAim = GetComponent<IAim>();
+        _projectileSpeed = _shooter.CurrentProjectileSpeed;
     }
 
     public void LateUpdate()
     {
         if (!HasValidTarget())
         {
-            FindTarget();
+            _target  = _targetFinder.FindTarget(transform.position, _currentTower.fireRange);
+            _timeToTarget = _targetFinder.CalcTimeToTarget(_projectileSpeed);
         }
         if (HasValidTarget())
         {
             if (_currentTower.towerGunHeadMoveable)
             {
-                AimTarget();
+                _targetAim.AimTarget(_currentTower.towerGunHeadMoveable, _target, _projectileSpeed, _currentTower.rotationSpeed);
                 _shooter.TryShoot(_currentTower.fireSpeedCD, _target);
             }
         }
         else
         {
-            AimReset();
+            _targetAim.AimReset(_currentTower.towerGunHeadMoveable, defaultRotationEuler, _currentTower.rotationSpeed);
         }
     }
 
@@ -64,61 +70,6 @@ public class Towers : MonoBehaviour, IPoolable
             return false;
         }
         return _target.gameObject.activeInHierarchy;
-    }
-
-    private void FindTarget()
-    {
-        _target = GetNearestMonsterInRange();
-    }
-
-    private Transform GetNearestMonsterInRange()
-    {
-        Collider[] colliders = Physics.OverlapSphere(transform.position, _currentTower.fireRange);
-        Transform nearestTarget = null;
-
-        foreach (var col in colliders)
-        {
-            if (col.CompareTag("Monster"))
-            {
-                float distance = (transform.position - col.transform.position).magnitude;
-                if (distance < _currentTower.fireRange)
-                {
-                    _distanceToActualTarget = distance;
-                    nearestTarget = col.transform;
-                }
-            }
-        }
-        return nearestTarget;
-    }
-
-    private void AimTarget()
-    {
-        // Vector3 direction = _target.position - transform.position;
-        // direction.y = 0;
-
-        float timeToTarget = _distanceToActualTarget/_currentTower.projectileSpeed;
-
-        Rigidbody targetRB = _target.GetComponent<Rigidbody>();
-        Vector3 targetVelocity = targetRB != null ? targetRB.linearVelocity : Vector3.zero;
-        Vector3 predictionTargetPosition = _target.position + (targetVelocity * timeToTarget);
-        Vector3 aimDirection = predictionTargetPosition - transform.position;
-        aimDirection.y = 0;
-
-        if (aimDirection != Vector3.zero)
-        {
-            Quaternion targetRotation = Quaternion.LookRotation(aimDirection);
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * _currentTower.rotationSpeed);
-            // float targetY = targetRotation.eulerAngles.y;
-            // float currentY = transform.rotation.eulerAngles.y;
-            // float newY = Mathf.LerpAngle(currentY, targetY, Time.deltaTime * _currentTower.rotationSpeed);
-
-            // transform.rotation = Quaternion.Euler(0, newY, 0);
-        }
-    }
-
-    private void AimReset()
-    {
-        transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(defaultRotationEuler), Time.deltaTime * _currentTower.rotationSpeed);
     }
 
     public void OnSpawn()

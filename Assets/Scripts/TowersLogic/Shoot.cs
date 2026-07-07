@@ -8,6 +8,14 @@ public class Shoot : MonoBehaviour, IShooteable
     public AmmoSO _currentAmmo;
     private bool _canShoot = true;
 
+    public float CurrentProjectileSpeed 
+    {
+        get
+        {
+            return _currentAmmo.ammoSpeed;
+        }         
+    }
+
     public void TryShoot(float fireSpeed, Transform target)
     {
         if (_canShoot && target != null)
