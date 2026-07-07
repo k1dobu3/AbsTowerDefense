@@ -7,7 +7,7 @@ public class GuidedProjectile : MonoBehaviour {
 	public int m_damage = 10;
 
 	void Update () {
-		if (m_target == null) {
+		if (m_target == null || !m_target.gameObject.activeInHierarchy) {
 			Destroy (gameObject);
 			return;
 		}

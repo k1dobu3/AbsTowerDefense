@@ -8,7 +8,6 @@ public class ForwardLineAim : MonoBehaviour, IAim
         {
             Vector3 direction = (_target.position - transform.position).normalized;
             transform.rotation = Quaternion.LookRotation(direction);
-            Debug.Log("Навелся");
         }
     } 
 

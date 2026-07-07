@@ -6,9 +6,6 @@ public class BallisticAim : MonoBehaviour, IAim
     {
         if (rotateable)
         {
-            // Vector3 direction = _target.position - transform.position;
-            // direction.y = 0;
-
             Rigidbody targetRB = _target.GetComponent<Rigidbody>();
             Vector3 targetVelocity = targetRB != null ? targetRB.linearVelocity : Vector3.zero;
             Vector3 predictionTargetPosition = _target.position + (targetVelocity * timeToTarget);
@@ -19,11 +16,6 @@ public class BallisticAim : MonoBehaviour, IAim
             {
                 Quaternion targetRotation = Quaternion.LookRotation(aimDirection);
                 transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * gunRotationSpeed);
-                // float targetY = targetRotation.eulerAngles.y;
-                // float currentY = transform.rotation.eulerAngles.y;
-                // float newY = Mathf.LerpAngle(currentY, targetY, Time.deltaTime * _currentTower.rotationSpeed);
-
-                // transform.rotation = Quaternion.Euler(0, newY, 0);
             }
         }
     }

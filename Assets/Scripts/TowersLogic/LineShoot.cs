@@ -1,8 +1,7 @@
 using System.Collections;
-using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
 
-public class Shoot : MonoBehaviour, IShooteable
+public class LineShoot : MonoBehaviour, IShooteable
 {   
     [SerializeField]
     public AmmoSO _currentAmmo;
@@ -29,6 +28,8 @@ public class Shoot : MonoBehaviour, IShooteable
     {
         _canShoot = false;
         Instantiate(_currentAmmo.ammoProjectilePrefab, transform.position, transform.rotation); //заменить на пул, добавит поворот к цели
+        var projectileBeh = _currentAmmo.ammoProjectilePrefab.GetComponent<GuidedProjectile> ();
+		projectileBeh.m_target = target.gameObject;
         yield return new WaitForSeconds(fireSpeed);
         _canShoot = true;
     }
