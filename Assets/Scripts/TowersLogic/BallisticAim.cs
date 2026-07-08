@@ -24,7 +24,9 @@ public class BallisticAim : MonoBehaviour, IAim
     {
         if (rotateable)
         {
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(defaultRotationEuler), Time.deltaTime * gunRotationSpeed);
+            Quaternion defaultRot = Quaternion.Euler(defaultRotationEuler);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, defaultRot, Time.deltaTime * gunRotationSpeed);
+            //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(defaultRotationEuler), Time.deltaTime * gunRotationSpeed);
         }
     }
 }
