@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class SearchTarget : MonoBehaviour, ITargetable
 {
-    float _distanceToActualTarget;
+    private float _distanceToActualTarget;
 
     public Transform FindTarget(Vector3 searcherPos, float fireRange)
     {
         Collider[] colliders = Physics.OverlapSphere(searcherPos, fireRange);
         Transform nearestTarget = null;
-        
+
 
         foreach (var col in colliders)
         {
@@ -33,6 +33,6 @@ public class SearchTarget : MonoBehaviour, ITargetable
 
     public float CalcTimeToTarget(float projectileSpeed)
     {
-        return _distanceToActualTarget/projectileSpeed;
+        return _distanceToActualTarget / projectileSpeed;
     }
 }

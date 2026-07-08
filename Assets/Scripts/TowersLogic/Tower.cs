@@ -39,12 +39,12 @@ public class Towers : MonoBehaviour, IPoolable
 
     public void LateUpdate()
     {
-        if (!HasValidTarget())
+        _target = _targetFinder.FindTarget(transform.position, _currentTower.fireRange);
+        if (!_target)
         {
-            _target  = _targetFinder.FindTarget(transform.position, _currentTower.fireRange);
             _timeToTarget = _targetFinder.CalcTimeToTarget(_projectileSpeed);
         }
-        if (HasValidTarget())
+        if (_target)
         {
             if (_currentTower.towerGunHeadMoveable)
             {
@@ -56,20 +56,6 @@ public class Towers : MonoBehaviour, IPoolable
         {
             _targetAim.AimReset(_currentTower.towerGunHeadMoveable, defaultRotationEuler, _currentTower.rotationSpeed);
         }
-    }
-
-    private bool HasValidTarget()
-    {
-        if (_target == null)
-        {
-            return false;
-        }
-        if (_target.TryGetComponent<IDamageable>(out var damageable) && damageable.IsDead())
-        {
-            _target = null;
-            return false;
-        }
-        return _target.gameObject.activeInHierarchy;
     }
 
     public void OnSpawn()
