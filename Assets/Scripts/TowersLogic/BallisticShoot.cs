@@ -34,7 +34,7 @@ public class BallisticShoot : MonoBehaviour, IShooteable
             {
                 Debug.DrawLine(ray.origin, hit.point, Color.red, 5.0f);
                 Debug.Log("Попали в: " + hit.collider.name);
-                Debug.LogError("EX");
+                //Debug.LogError("EX");  //for debug pause
                 if (target != null && hit.collider.CompareTag("Monster"))
                 {
                     StartCoroutine(MakeShoot(fireSpeed, target));
