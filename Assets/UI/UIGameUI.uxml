@@ -1,0 +1,4 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/UIStyle/GameUIStyle.uss?fileID=7433441132597879392&amp;guid=7441a1445aca65344a777f25b56bc8b8&amp;type=3#GameUIStyle"/>
+    <ui:Label text="Timer: 0s" name="LABEL_MonsterSpawnTimer"/>
+</ui:UXML>

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Towers : MonoBehaviour, IPoolable
+public class Towers : MonoBehaviour
 {
     [Header("Default Aim Line")]
     [SerializeField]
@@ -56,14 +56,6 @@ public class Towers : MonoBehaviour, IPoolable
         {
             _targetAim.AimReset(_currentTower.towerGunHeadMoveable, defaultRotationEuler, _currentTower.rotationSpeed);
         }
-    }
-
-    public void OnSpawn()
-    {
-    }
-
-    public void OnDespawn()
-    {
     }
 
     public Transform Transform => transform;

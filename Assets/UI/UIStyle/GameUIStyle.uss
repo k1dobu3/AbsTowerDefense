@@ -1,0 +1,12 @@
+:root {
+}
+
+
+#LABEL_MonsterSpawnTimer {
+    font-size: 42px;
+    -unity-font-style: bold;
+    color: rgb(255, 0, 255);
+    unity-text-align: left;
+    width: 100%;
+    height: 80px;
+}

@@ -1,9 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CannonProjectile : MonoBehaviour {
-	public float _speed = 0.2f;
-	public int _damage = 10;
+public class CannonProjectile : MonoBehaviour, IPoolable
+{
+	public float _speed = 20f;
+
+	private float _cannonDamage;
+	private GameObjectPool<CannonProjectile> _pool;
+
+	public float cannonDamage { get {return _cannonDamage;} set {_cannonDamage = value;} }
+
+	public void OnSpawn()
+	{
+	}
+
+	public void OnDespawn()
+	{
+		_pool.ReturnObject(this);
+	}
+
 
 	void Update () {
 		var translation = transform.forward * _speed;
@@ -15,7 +30,7 @@ public class CannonProjectile : MonoBehaviour {
 		if (monster == null)
 			return;
 
-		monster.TakeDamage (_damage);
-		Destroy (gameObject);
+		monster.TakeDamage (_cannonDamage);
+		OnDespawn();
 	}
 }

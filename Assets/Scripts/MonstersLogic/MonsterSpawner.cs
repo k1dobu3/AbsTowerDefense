@@ -1,14 +1,18 @@
 using UnityEngine;
 using Unity.VisualScripting;
+using System;
 
 public class Spawner : MonoBehaviour
 {
 	[SerializeField] public float _interval = 3;
 	[SerializeField] private int _maxPoolSize = 10;
 	[SerializeField] private GameObject _moveTarget;
-	[SerializeField] 
-	private MonsterDataSO _monsterData;
+	[SerializeField] private MonsterDataSO _monsterData;
+	[SerializeField] private GameUI gameUI;
+
+    private PlayerStatsModel _model;
 	private float _lastSpawn = -1;
+	private float _timeLeft;
 	private GameObjectPool<Monster> _monsterPool;
 
 
@@ -19,6 +23,7 @@ public class Spawner : MonoBehaviour
 
 	public void Start()
 	{
+		_model = gameUI.GetPlayerStatsModel();
 		_lastSpawn = Time.time;
 	}
 
@@ -28,7 +33,10 @@ public class Spawner : MonoBehaviour
 		{
 			SpawnMonster();
 			_lastSpawn = Time.time;
+			
 		}
+		_timeLeft = (_lastSpawn + _interval) - Time.time;
+		_model.UpdateTimer(MathF.Round(_timeLeft, 2));
 	}
 
 	public void SpawnMonster()

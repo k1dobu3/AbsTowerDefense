@@ -33,7 +33,7 @@ public class BallisticShoot : MonoBehaviour, IShooteable
             if (Physics.Raycast(ray, out hit, 100f))
             {
                 Debug.DrawLine(ray.origin, hit.point, Color.red, 5.0f);
-                Debug.Log("Попали в: " + hit.collider.name);
+                Debug.Log("Прицел в: " + hit.collider.name);
                 //Debug.LogError("EX");  //for debug pause
                 if (target != null && hit.collider.CompareTag("Monster"))
                 {
@@ -45,11 +45,6 @@ public class BallisticShoot : MonoBehaviour, IShooteable
                 Debug.DrawRay(ray.origin, ray.direction * 100f, Color.green, 5.0f);
             }
         }
-
-        // if (_canShoot && target != null)
-        // {
-        //     StartCoroutine(MakeShoot(fireSpeed, target));
-        // }
     }
 
     private IEnumerator MakeShoot(float fireSpeed, Transform target)
