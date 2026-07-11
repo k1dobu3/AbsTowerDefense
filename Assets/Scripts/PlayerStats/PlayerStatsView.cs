@@ -24,11 +24,14 @@ public class PlayerStatsView : MonoBehaviour, IPlayerStatsView
     public void StatsUpdate(PlayerStatsModel model)
     {
         //_killsCount.text = $"Kills: {model.Kills}";
+        _spawnerTimerLabel.text = $"Next spawn: {model.TimeToNextSpawnMonster:F2}";
+        //Debug.Log("тайминги");
     }
 
     public void TimersUpdate(PlayerStatsModel model)
     {
-        _spawnerTimerLabel.text = $"Next spawn: {model.TimeToNextSpawnMonster:F2}";
+        //_spawnerTimerLabel.text = $"Next spawn: {model.TimeToNextSpawnMonster:F2}";
+        Debug.Log("тайминги");
     }
 
     public event Action OnSomeButtonClicked;

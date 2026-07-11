@@ -63,6 +63,9 @@ public class Spawner : MonoBehaviour
 
 	private void OnDestroy()
 	{
-		_monsterPool.ClearPool();
+		if (_monsterPool != null)
+		{
+			_monsterPool.ClearPool();	
+		}
 	}
 }

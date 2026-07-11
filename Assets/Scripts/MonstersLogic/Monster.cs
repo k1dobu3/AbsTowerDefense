@@ -7,7 +7,7 @@ public class Monster : MonoBehaviour, IPoolable, IDamageable
 {
 	public GameObject _moveTarget;
 	private float _speed = 0.1f;
-	private float _hp = 100;
+	private float _hp;
 	const float _reachDistance = 0.5f;
 	private GameObjectPool<Monster> _pool;
 	public static event Action OnAnyMonsterDeath;
@@ -64,7 +64,6 @@ public class Monster : MonoBehaviour, IPoolable, IDamageable
 			{
                 OnAnyMonsterDeath?.Invoke();
 			}
-			Debug.Log("Убили негра");
 			OnDespawn();
 			IsDead();
 		}

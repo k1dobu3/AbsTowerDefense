@@ -10,7 +10,7 @@ public class PlayerViewPresenter
         _model = model;
         _view = view;
         _model.OnStatsChanged += UpdateView;
-        _model.OnTimerChanged += UpdateViewTimer;
+        _model.OnTimerChanged += UpdateView;
     }
 
     public void Start()
@@ -33,11 +33,12 @@ public class PlayerViewPresenter
     private void UpdateView()
     {
         _view.StatsUpdate(_model);
+        UpdateViewTimer();
     }
 
     private void UpdateViewTimer()
     {
-        _view.StatsUpdate(_model);
+        _view.TimersUpdate(_model);
     }
 
     public void Dispose()

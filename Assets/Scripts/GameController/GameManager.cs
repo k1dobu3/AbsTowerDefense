@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private MonsterSpawner spawner;
     public static GameManager Instance { get; private set; }
 
     public static event Action<int> OnKillsCountChanged;
@@ -19,7 +18,6 @@ public class GameManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        Debug.Log(_gameKills);
     }
 
     private void OnEnable()
@@ -47,8 +45,4 @@ public class GameManager : MonoBehaviour
     {
         _playTime += Time.deltaTime;
     }
-}
-
-internal class MonsterSpawner
-{
 }
