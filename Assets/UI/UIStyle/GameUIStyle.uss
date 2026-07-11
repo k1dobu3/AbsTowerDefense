@@ -1,8 +1,10 @@
 :root {
+    --color-white: white;
 }
 
 Label {
-    color: white;
+    font-size: 16px;
+    color: var(--color-white);
     -unity-font-style: bold;
     align-self: center;
 }
@@ -12,16 +14,15 @@ Label {
     max-width: 300px;
     background-color: rgba(0, 0, 0, 0.7);
     opacity: 1;
-
     border-radius: 16px;
     border-width: 3px;
     border-color: rgba(255, 255, 255, 0.2);
 }
 
-#LABEL_MonsterKillCounter {
+#MonsterKillCounter {
     font-size: 24px;
     -unity-font-style: bold;
-    color: rgb(255, 255, 255)
+    color: var(--color-white);
     unity-text-align: left;
     width: 100%;
     height: auto;
@@ -29,7 +30,7 @@ Label {
     padding: 6px 6px 6px 6px;
 }
 
-#LABEL_MonsterSpawnTimer {
+#MonsterSpawnTimer {
     font-size: 24px;
     -unity-font-style: bold;
     color: rgb(120, 255, 120);

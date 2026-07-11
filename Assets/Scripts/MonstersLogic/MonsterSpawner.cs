@@ -22,7 +22,7 @@ public class Spawner : MonoBehaviour
 
 	public void Start()
 	{
-		_lastSpawn = Time.time;
+		_lastSpawn = -_interval;
 		_model = gameUI.GetPlayerStatsModel();
 	}
 
