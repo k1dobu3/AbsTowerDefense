@@ -4,7 +4,7 @@ using System.Collections;
 public class GuidedProjectile : MonoBehaviour {
 	public GameObject m_target;
 	public float m_speed = 0.2f;
-	public int m_damage = 10;
+	public int m_damage = 150;
 
 	void Update () {
 		if (m_target == null || !m_target.gameObject.activeInHierarchy) {
@@ -27,7 +27,7 @@ public class GuidedProjectile : MonoBehaviour {
 		if (monster == null)
 			return;
 
-		monster.TakeDamage (m_damage);
+		monster.TakeDamage (m_damage, false);
 		Destroy (gameObject);
 	}
 }

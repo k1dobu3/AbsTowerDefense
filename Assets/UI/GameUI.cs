@@ -13,7 +13,7 @@ public class GameUI : MonoBehaviour
         _model = new PlayerStatsModel();
         _presenter = new PlayerViewPresenter(_model, uiObject);
     } 
-    
+
     private void Start()
     {
         _presenter.Start();

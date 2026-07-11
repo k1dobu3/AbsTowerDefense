@@ -30,7 +30,7 @@ public class CannonProjectile : MonoBehaviour, IPoolable
 		if (monster == null)
 			return;
 
-		monster.TakeDamage (_cannonDamage);
+		monster.TakeDamage (_cannonDamage, false);
 		OnDespawn();
 	}
 }

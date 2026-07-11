@@ -10,12 +10,24 @@ public class PlayerViewPresenter
         _model = model;
         _view = view;
         _model.OnStatsChanged += UpdateView;
+        _model.OnTimerChanged += UpdateViewTimer;
     }
 
     public void Start()
     {
+        if (GameManager.Instance != null)
+        {
+            GameManager.OnKillsCountChanged += UpdateModelKills;
+            UpdateModelKills(GameManager._gameKills);
+        }
+        
         _view.Initialize();
         UpdateView();
+    }
+
+    private void UpdateModelKills(int kills)
+    {
+        _model.UpdateKills(kills);
     }
 
     private void UpdateView()
@@ -23,8 +35,17 @@ public class PlayerViewPresenter
         _view.StatsUpdate(_model);
     }
 
+    private void UpdateViewTimer()
+    {
+        _view.StatsUpdate(_model);
+    }
+
     public void Dispose()
     {
         _model.OnStatsChanged -= UpdateView;
+        if (GameManager.Instance != null)
+        {
+            GameManager.OnKillsCountChanged -= UpdateModelKills;
+        }
     }
 }

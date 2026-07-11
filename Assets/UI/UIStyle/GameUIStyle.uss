@@ -3,14 +3,30 @@
 
 Label {
     color: white;
+    -unity-font-style: bold;
     align-self: center;
 }
 
 #GameRrealtimeStats {
     display: flex;
-    max-width: 250px;
+    max-width: 300px;
     background-color: rgba(0, 0, 0, 0.7);
     opacity: 1;
+
+    border-radius: 16px;
+    border-width: 3px;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+#LABEL_MonsterKillCounter {
+    font-size: 24px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255)
+    unity-text-align: left;
+    width: 100%;
+    height: auto;
+    background: rgba(0, 0, 0, 0);
+    padding: 6px 6px 6px 6px;
 }
 
 #LABEL_MonsterSpawnTimer {
@@ -19,6 +35,7 @@ Label {
     color: rgb(120, 255, 120);
     unity-text-align: left;
     width: 100%;
-    height: 80px;
+    height: auto;
     background: rgba(0, 0, 0, 0);
+    padding: 6px 6px 6px 6px;
 }

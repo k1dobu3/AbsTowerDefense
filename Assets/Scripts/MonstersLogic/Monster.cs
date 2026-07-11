@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
+using System;
 
 public class Monster : MonoBehaviour, IPoolable, IDamageable 
 {
@@ -8,6 +10,7 @@ public class Monster : MonoBehaviour, IPoolable, IDamageable
 	private float _hp = 100;
 	const float _reachDistance = 0.5f;
 	private GameObjectPool<Monster> _pool;
+	public static event Action OnAnyMonsterDeath;
 
 	public float speed { get { return _speed; } set { _speed = value; } }
 	public float hp { get { return _hp; } set { _hp = value; } }
@@ -38,7 +41,7 @@ public class Monster : MonoBehaviour, IPoolable, IDamageable
 			return;
 		
 		if (Vector3.Distance (transform.position, _moveTarget.transform.position) <= _reachDistance) {
-			TakeDamage(_hp);
+			TakeDamage(_hp, true);
 			return;
 		}
 		else
@@ -52,11 +55,16 @@ public class Monster : MonoBehaviour, IPoolable, IDamageable
 		transform.position = Vector3.MoveTowards(transform.position, _moveTarget.transform.position, Time.deltaTime * _speed);
 	}
 
-	public void TakeDamage(float damage) 
+	public void TakeDamage(float damage, bool systemKill) 
 	{
 		_hp -= damage;
 		if (_hp <= 0f) {
 			_hp = 0f;
+			if (!systemKill)
+			{
+                OnAnyMonsterDeath?.Invoke();
+			}
+			Debug.Log("Убили негра");
 			OnDespawn();
 			IsDead();
 		}
@@ -66,4 +74,9 @@ public class Monster : MonoBehaviour, IPoolable, IDamageable
 	{
 		return _hp <= 0;
 	}
+
+    private void OnDestroy()
+    {
+        OnAnyMonsterDeath = null;
+    }
 }

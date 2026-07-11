@@ -2,6 +2,9 @@
     <Style src="project://database/Assets/UI/UIStyle/GameUIStyle.uss?fileID=7433441132597879392&amp;guid=7441a1445aca65344a777f25b56bc8b8&amp;type=3#GameUIStyle"/>
     <ui:GroupBox name="GameRrealtimeStats" style="flex-basis: auto; flex-direction: column; flex-wrap: nowrap; flex-shrink: 0; flex-grow: 0;">
         <ui:Label text="Current Game Stats"/>
+        <ui:Label text="Kills: 0" name="LABEL_MonsterKillCounter"/>
+    </ui:GroupBox>
+    <ui:GroupBox name="GameRrealtimeTimers" style="flex-basis: auto; flex-direction: column; flex-wrap: nowrap; flex-shrink: 0; flex-grow: 0;">
         <ui:Label text="Timer: 0s" name="LABEL_MonsterSpawnTimer"/>
     </ui:GroupBox>
 </ui:UXML>
