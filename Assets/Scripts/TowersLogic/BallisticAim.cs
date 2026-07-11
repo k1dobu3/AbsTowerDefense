@@ -4,7 +4,7 @@ public class BallisticAim : MonoBehaviour, IAim
 {
     public void AimTarget(bool rotateable, Transform _target,  float timeToTarget, float gunRotationSpeed)
     {
-        if (rotateable)
+        if (rotateable) // rotate gun mounts
         {
             Rigidbody targetRB = _target.GetComponent<Rigidbody>();
             Vector3 targetVelocity = targetRB != null ? targetRB.linearVelocity : Vector3.zero;
@@ -18,9 +18,14 @@ public class BallisticAim : MonoBehaviour, IAim
                 transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * gunRotationSpeed);
             }
         }
+
+        if (true) //incile gun barrel
+        {
+            //Debug.Log("Ствол наклоняется");
+        }
     }
 
-        public void AimReset(bool rotateable, Vector3 defaultRotationEuler, float gunRotationSpeed)
+    public void AimReset(bool rotateable, Vector3 defaultRotationEuler, float gunRotationSpeed)
     {
         if (rotateable)
         {
