@@ -17,21 +17,20 @@ public class PlayerStatsView : MonoBehaviour, IPlayerStatsView
         }
 
         var root = uiDocument.rootVisualElement;
-        _killsCount = root.Q<Label>("LABEL_MonsterKillCounter");
         _spawnerTimerLabel = root.Q<Label>("LABEL_MonsterSpawnTimer");
+        _killsCount = root.Q<Label>("LABEL_MonsterKillCounter");
     }
 
     public void StatsUpdate(PlayerStatsModel model)
     {
         //_killsCount.text = $"Kills: {model.Kills}";
-        _spawnerTimerLabel.text = $"Next spawn: {model.TimeToNextSpawnMonster:F2}";
-        //Debug.Log("тайминги");
+        Debug.Log(model.Kills);
     }
 
     public void TimersUpdate(PlayerStatsModel model)
     {
-        //_spawnerTimerLabel.text = $"Next spawn: {model.TimeToNextSpawnMonster:F2}";
-        Debug.Log("тайминги");
+        _spawnerTimerLabel.text = $"Next spawn: {model.TimeToNextSpawnMonster:F2}";
+        // Debug.Log(model.TimeToNextSpawnMonster);
     }
 
     public event Action OnSomeButtonClicked;

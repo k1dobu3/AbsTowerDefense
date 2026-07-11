@@ -20,6 +20,6 @@ public class PlayerStatsModel
     public void UpdateTimer(float currentTimeToNexSpawn)
     {
         TimeToNextSpawnMonster = currentTimeToNexSpawn;
-        OnStatsChanged?.Invoke();
+        OnTimerChanged?.Invoke();
     }
 }

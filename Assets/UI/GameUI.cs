@@ -21,6 +21,7 @@ public class GameUI : MonoBehaviour
 
     private void Update()
     {
+        _presenter?.UpdateViewTimer();
     }
 
     private void OnDestroy()

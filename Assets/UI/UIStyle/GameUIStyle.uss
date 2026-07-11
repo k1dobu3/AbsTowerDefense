@@ -7,7 +7,7 @@ Label {
     align-self: center;
 }
 
-#GameRrealtimeStats {
+#GameRealtimeStats, #GameRealtimeTimers {
     display: flex;
     max-width: 300px;
     background-color: rgba(0, 0, 0, 0.7);

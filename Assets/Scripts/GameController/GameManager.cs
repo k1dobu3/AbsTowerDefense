@@ -5,9 +5,9 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    public static event Action<int> OnKillsCountChanged;
+    public event Action<int> OnKillsCountChanged;
     private float _playTime;
-    public static int _gameKills = 0;
+    public int _gameKills = 0;
 
     private void Awake()
     {
@@ -22,22 +22,17 @@ public class GameManager : MonoBehaviour
 
     private void OnEnable()
     {
-        Monster.OnAnyMonsterDeath += AddKillsScoreOne;
+        Monster.OnAnyMonsterDeath += AddKillsScore;
     }
 
     private void OnDisable()
     {
-        Monster.OnAnyMonsterDeath -= AddKillsScoreOne;
+        Monster.OnAnyMonsterDeath -= AddKillsScore;
     }
 
-    public void AddKillsScoreOne()
+    public void AddKillsScore()
     {
-        AddKillsScore(1);
-    }
-
-    public static void AddKillsScore(int kills)
-    {
-        _gameKills += kills;
+        _gameKills++;
         OnKillsCountChanged?.Invoke(_gameKills);
     }
 
