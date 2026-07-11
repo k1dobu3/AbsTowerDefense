@@ -22,8 +22,8 @@ public class Spawner : MonoBehaviour
 
 	public void Start()
 	{
-		_model = gameUI.GetPlayerStatsModel();
 		_lastSpawn = Time.time;
+		_model = gameUI.GetPlayerStatsModel();
 	}
 
 	void Update()
