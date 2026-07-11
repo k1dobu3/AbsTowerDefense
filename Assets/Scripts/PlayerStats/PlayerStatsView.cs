@@ -21,7 +21,7 @@ public class PlayerStatsView : MonoBehaviour, IPlayerStatsView
 
     public void StatsUpdate(PlayerStatsModel model)
     {
-        _spawnerTimerLabel.text = $"Next spawn: {model.TimeToNextSpawnMonster}";
+        _spawnerTimerLabel.text = $"Next spawn: {model.TimeToNextSpawnMonster:F2}";
     }
 
     public event Action OnSomeButtonClicked;

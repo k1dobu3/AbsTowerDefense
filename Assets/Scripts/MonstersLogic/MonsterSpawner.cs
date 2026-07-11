@@ -1,6 +1,5 @@
 using UnityEngine;
 using Unity.VisualScripting;
-using System;
 
 public class Spawner : MonoBehaviour
 {
@@ -36,7 +35,7 @@ public class Spawner : MonoBehaviour
 			
 		}
 		_timeLeft = (_lastSpawn + _interval) - Time.time;
-		_model.UpdateTimer(MathF.Round(_timeLeft, 2));
+		_model.UpdateTimer(_timeLeft);
 	}
 
 	public void SpawnMonster()
