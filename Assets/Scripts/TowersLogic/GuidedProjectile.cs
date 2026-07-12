@@ -28,10 +28,9 @@ public class GuidedProjectile : MonoBehaviour, IPoolable
 		_pool.ReturnObject(this);
     }
 
-
 	void Update () {
 		if (_target == null || !_target.gameObject.activeInHierarchy) {
-			Destroy (gameObject);
+			OnDespawn();
 			Debug.Log("Полетел");
 			return;
 		}
@@ -52,6 +51,6 @@ public class GuidedProjectile : MonoBehaviour, IPoolable
 			return;
 
 		monster.TakeDamage (_currentAmmoData.ammoDamage, false);
-		_pool.ReturnObject(this);
+		OnDespawn();
 	}
 }

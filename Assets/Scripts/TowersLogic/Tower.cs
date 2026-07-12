@@ -10,13 +10,13 @@ public class Towers : MonoBehaviour
     private TowerDataSO _data;
 
     private TowerDataSO _currentTower;
-    private Transform _target;
+    private GameObject _target;
     private float _projectileSpeed;
     private float _timeToTarget;
     private IShooteable _shooter;
     private ITargetable _targetFinder;
     private IAim _targetAim;
-    
+
     private void Awake()
     {
         if (_data == null)

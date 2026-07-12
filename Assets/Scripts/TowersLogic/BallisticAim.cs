@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class BallisticAim : MonoBehaviour, IAim
 {
-    public void AimTarget(bool rotateable, Transform _target,  float timeToTarget, float gunRotationSpeed)
+    public void AimTarget(bool rotateable, GameObject _target,  float timeToTarget, float gunRotationSpeed)
     {
         if (rotateable) // rotate gun mounts
         {
             Rigidbody targetRB = _target.GetComponent<Rigidbody>();
             Vector3 targetVelocity = targetRB != null ? targetRB.linearVelocity : Vector3.zero;
-            Vector3 predictionTargetPosition = _target.position + (targetVelocity * timeToTarget);
+            Vector3 predictionTargetPosition = _target.transform.position + (targetVelocity * timeToTarget);
             Vector3 aimDirection = predictionTargetPosition - transform.position;
             aimDirection.y = 0;
 

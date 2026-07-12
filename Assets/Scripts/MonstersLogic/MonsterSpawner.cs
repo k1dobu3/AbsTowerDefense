@@ -50,9 +50,9 @@ public class Spawner : MonoBehaviour
 			monster.SetPool(_monsterPool);
 
 			if (monster.GetComponent<Rigidbody>() == null)
-		{
-			monster.AddComponent<Rigidbody>().useGravity = false;
-		}
+			{
+				monster.AddComponent<Rigidbody>().useGravity = false;
+			}
 		}
 	}
 

@@ -4,10 +4,10 @@ public class SearchTarget : MonoBehaviour, ITargetable
 {
     private float _distanceToActualTarget;
 
-    public Transform FindTarget(Vector3 searcherPos, float fireRange)
+    public GameObject FindTarget(Vector3 searcherPos, float fireRange)
     {
         Collider[] colliders = Physics.OverlapSphere(searcherPos, fireRange);
-        Transform nearestTarget = null;
+        GameObject nearestTarget = null;
 
 
         foreach (var col in colliders)
@@ -18,7 +18,7 @@ public class SearchTarget : MonoBehaviour, ITargetable
                 if (distance < fireRange)
                 {
                     _distanceToActualTarget = distance;
-                    nearestTarget = col.transform;
+                    nearestTarget = col.gameObject;
                 }
                 else
                 {

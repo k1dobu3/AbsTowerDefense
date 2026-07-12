@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class ForwardLineAim : MonoBehaviour, IAim
 {
-    public void AimTarget(bool rotateable, Transform _target, float projectileSpeed, float gunRotationSpeed)
+    public void AimTarget(bool rotateable, GameObject _target, float projectileSpeed, float gunRotationSpeed)
     {
         if (rotateable)
         {
-            Vector3 direction = (_target.position - transform.position).normalized;
+            Vector3 direction = (_target.transform.position - transform.position).normalized;
             transform.rotation = Quaternion.LookRotation(direction);
         }
     } 

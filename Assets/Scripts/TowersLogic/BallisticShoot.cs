@@ -18,7 +18,7 @@ public class BallisticShoot : MonoBehaviour, IShooteable
         }
     }
 
-    public void TryShoot(float fireSpeed, Transform target)
+    public void TryShoot(float fireSpeed, GameObject target)
     {
         if (_canShoot)
         {
@@ -27,7 +27,7 @@ public class BallisticShoot : MonoBehaviour, IShooteable
            + transform.up * 1
            + transform.right * 2;
 
-            Ray ray = new Ray(modifiedPosition, (target.position - modifiedPosition).normalized);
+            Ray ray = new Ray(modifiedPosition, (target.transform.position - modifiedPosition).normalized);
             RaycastHit hit;
 
             if (Physics.Raycast(ray, out hit, 100f))
@@ -47,7 +47,7 @@ public class BallisticShoot : MonoBehaviour, IShooteable
         }
     }
 
-    private IEnumerator MakeShoot(float fireSpeed, Transform target)
+    private IEnumerator MakeShoot(float fireSpeed, GameObject target)
     {
         _canShoot = false;
         Debug.Log("Пиу");

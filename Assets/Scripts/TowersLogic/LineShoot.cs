@@ -22,9 +22,21 @@ public class LineShoot : MonoBehaviour, IShooteable
         {
             _pool = new GameObjectPool<GuidedProjectile>(_currentAmmo.ammoProjectilePrefab, 5, "CrystalTower");
         }
+        SpawnProjectile();
     }
 
-    public void TryShoot(float fireSpeed, Transform target)
+    private void SpawnProjectile(GameObject target = null)
+    {
+        GuidedProjectile crystal = _pool.GetObject();
+		if (crystal != null)
+		{
+			crystal.transform.position = transform.position;
+			crystal.Initialize(_currentAmmo, target);
+			crystal.SetPool(_pool);
+        }
+    }
+
+    public void TryShoot(float fireSpeed, GameObject target)
     {
         if (_canShoot && target != null)
         {
@@ -33,13 +45,19 @@ public class LineShoot : MonoBehaviour, IShooteable
     } 
 
 
-    private IEnumerator MakeShoot(float fireSpeed, Transform target)
+    private IEnumerator MakeShoot(float fireSpeed, GameObject target)
     {
         _canShoot = false;
-        Instantiate(_currentAmmo.ammoProjectilePrefab, transform.position, transform.rotation); //заменить на пул
-        var projectileBeh = _currentAmmo.ammoProjectilePrefab.GetComponent<GuidedProjectile> ();
-        projectileBeh.Initialize(_currentAmmo, target.gameObject);
+        SpawnProjectile(target);
         yield return new WaitForSeconds(fireSpeed);
         _canShoot = true;
     }
+
+    private void OnDestroy()
+	{
+		if (_pool != null)
+		{
+			_pool.ClearPool();	
+		}
+	}
 }
