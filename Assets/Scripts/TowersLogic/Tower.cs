@@ -40,18 +40,15 @@ public class Towers : MonoBehaviour
     public void LateUpdate()
     {
         _target = _targetFinder.FindTarget(transform.position, _currentTower.fireRange);
-        if (!_target)
-        {
-            _timeToTarget = _targetFinder.CalcTimeToTarget(_projectileSpeed);
-            _targetAim.AimReset(_currentTower.towerGunHeadMoveable, defaultRotationEuler, _currentTower);
-        }
         if (_target)
         {
-            if (_currentTower.towerGunHeadMoveable)
-            {
-                _targetAim.AimTarget(_currentTower.towerGunHeadMoveable, _target, _projectileSpeed, _currentTower);
-                _shooter.TryShoot(_currentTower.fireSpeedCD, _target);
-            }
+            _timeToTarget = _targetFinder.CalcTimeToTarget(_projectileSpeed);
+            _targetAim.AimTarget(_currentTower.towerGunHeadMoveable, _target, _projectileSpeed, _currentTower);
+            _shooter.TryShoot(_currentTower.fireSpeedCD, _target);
+        }
+        else
+        {
+            _targetAim.AimReset(_currentTower.towerGunHeadMoveable, defaultRotationEuler, _currentTower);
         }
     }
 
