@@ -48,13 +48,13 @@ public class Towers : MonoBehaviour
         {
             if (_currentTower.towerGunHeadMoveable)
             {
-                _targetAim.AimTarget(_currentTower.towerGunHeadMoveable, _target, _projectileSpeed, _currentTower.rotationSpeed);
+                _targetAim.AimTarget(_currentTower.towerGunHeadMoveable, _target, _projectileSpeed, _currentTower);
                 _shooter.TryShoot(_currentTower.fireSpeedCD, _target);
             }
         }
         else
         {
-            _targetAim.AimReset(_currentTower.towerGunHeadMoveable, defaultRotationEuler, _currentTower.rotationSpeed);
+            _targetAim.AimReset(_currentTower.towerGunHeadMoveable, defaultRotationEuler, _currentTower);
         }
     }
 

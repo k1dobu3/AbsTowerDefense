@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class ForwardLineAim : MonoBehaviour, IAim
 {
-    public void AimTarget(bool rotateable, GameObject _target, float projectileSpeed, float gunRotationSpeed)
+    public void AimTarget(bool rotateable, GameObject _target, float projectileSpeed, TowerDataSO currentTower)
     {
         if (rotateable)
         {
@@ -11,11 +11,11 @@ public class ForwardLineAim : MonoBehaviour, IAim
         }
     } 
 
-    public void AimReset (bool rotateable, Vector3 defaultRotationEuler, float gunRotationSpeed)
+    public void AimReset (bool rotateable, Vector3 defaultRotationEuler, TowerDataSO currentTower)
     {
         if (rotateable)
         {
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(defaultRotationEuler), Time.deltaTime * gunRotationSpeed);
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(defaultRotationEuler), Time.deltaTime * currentTower.rotationSpeed);
         }
     }
 }

@@ -14,4 +14,6 @@ public class TowerDataSO : ScriptableObject
 
     [Header("Tower Upgrade Data")]
     public float rotationSpeed = 5f;
+    public float barrelRotationSpeed = 0f;
+    public float startMuzzleSpeed = 0f;
 }
