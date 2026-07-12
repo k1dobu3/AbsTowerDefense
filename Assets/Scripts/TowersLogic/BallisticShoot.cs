@@ -8,6 +8,7 @@ public class BallisticShoot : MonoBehaviour, IShooteable
 {
     [SerializeField] public AmmoSO _currentAmmo;
     [SerializeField] public Transform _shootStartPoint;
+    [SerializeField] public GameObject _sparkles;
     private GameObjectPool<CannonProjectile> _pool;
     private bool _canShoot = true;
 
@@ -32,6 +33,7 @@ public class BallisticShoot : MonoBehaviour, IShooteable
         if (_canShoot )
         {
             StartCoroutine(MakeShoot(fireSpeed, target, startMuzzleSpeed, predictedPos));
+            StartCoroutine(DisableSparkles(fireSpeed*0.2f));
         }
     }
 
@@ -80,4 +82,14 @@ public class BallisticShoot : MonoBehaviour, IShooteable
         _canShoot = true;
     }
 
+    private IEnumerator DisableSparkles(float sparklesDisableTime)
+    {
+        if (_sparkles == null)
+        {
+            yield break;
+        }
+        _sparkles.SetActive(false);
+        yield return new WaitForSeconds(sparklesDisableTime);
+        _sparkles.SetActive(true);
+    }
 }

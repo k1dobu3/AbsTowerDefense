@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class LineShoot : MonoBehaviour, IShooteable
 {
-    [SerializeField]
-    public AmmoSO _currentAmmo;
+    [SerializeField] public AmmoSO _currentAmmo;
+    [SerializeField] public GameObject _halo;
     private bool _canShoot = true;
     private GameObjectPool<GuidedProjectile> _pool;
 
@@ -41,6 +41,7 @@ public class LineShoot : MonoBehaviour, IShooteable
         if (_canShoot && target != null)
         {
             StartCoroutine(MakeShoot(fireSpeed, target));
+            StartCoroutine(DisableHalo(fireSpeed*0.8f));
         }
     }
 
@@ -51,6 +52,17 @@ public class LineShoot : MonoBehaviour, IShooteable
         SpawnProjectile(target);
         yield return new WaitForSeconds(fireSpeed);
         _canShoot = true;
+    }
+
+    private IEnumerator DisableHalo(float haloDisableTime)
+    {
+        if (_halo == null)
+        {
+            yield break;
+        }
+        _halo.SetActive(false);
+        yield return new WaitForSeconds(haloDisableTime);
+        _halo.SetActive(true);
     }
 
     private void OnDestroy()
