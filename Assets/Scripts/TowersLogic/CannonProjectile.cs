@@ -1,28 +1,48 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Unity.VisualScripting;
 
 public class CannonProjectile : MonoBehaviour, IPoolable
 {
-	public float _speed = 20f;
-
-	private float _cannonDamage;
 	private GameObjectPool<CannonProjectile> _pool;
+	private AmmoSO _currentAmmoData;
+	private float _spawnTime;
+	public Rigidbody rb;
 
-	public float cannonDamage { get {return _cannonDamage;} set {_cannonDamage = value;} }
-
-	public void OnSpawn()
+	private void Awake()
 	{
+    	rb = GetComponent<Rigidbody>();
+	}
+	public void Initialize(AmmoSO ammoData)
+	{
+		_currentAmmoData = ammoData;
+	}
+
+	public void SetPool(GameObjectPool<CannonProjectile> pool) 
+	{
+		_pool = pool;
+	}
+
+    public void FixedUpdate()
+    {
+        if (Time.time - _spawnTime > 5f)
+		{
+			OnDespawn();
+		}
+    }
+
+    public void OnSpawn()
+	{
+		rb.linearVelocity = Vector3.zero;
+    	rb.angularVelocity = Vector3.zero;
+		_spawnTime = Time.time;
 	}
 
 	public void OnDespawn()
 	{
+		rb.linearVelocity = Vector3.zero;
+		rb.angularVelocity = Vector3.zero;
 		_pool.ReturnObject(this);
-	}
-
-
-	void Update () {
-		var translation = transform.forward * _speed;
-		transform.Translate (translation);
 	}
 
 	void OnTriggerEnter(Collider other) {
@@ -30,7 +50,7 @@ public class CannonProjectile : MonoBehaviour, IPoolable
 		if (monster == null)
 			return;
 
-		monster.TakeDamage (_cannonDamage, false);
+		monster.TakeDamage (_currentAmmoData.ammoDamage, false);
 		OnDespawn();
 	}
 }

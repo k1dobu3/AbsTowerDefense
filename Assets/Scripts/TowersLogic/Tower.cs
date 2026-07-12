@@ -40,7 +40,7 @@ public class Towers : MonoBehaviour
         {
             _timeToTarget = _targetFinder.CalcTimeToTarget(_projectileSpeed);
             _targetAim.AimTarget(_target, _projectileSpeed, _currentTower);
-            //_shooter.TryShoot(_currentTower.fireSpeedCD, _target);
+            _shooter.TryShoot(_currentTower.startMuzzleSpeed, _target);
         }
 
         if (_target == null)

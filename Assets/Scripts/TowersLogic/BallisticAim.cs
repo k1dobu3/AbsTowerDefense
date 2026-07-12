@@ -32,7 +32,6 @@ public class BallisticAim : MonoBehaviour, IAim
 
         if (true) //incile gun barrel
         {
-            // float resultBarrelAngle = float.MaxValue;
             float targetBarrelAngle = float.NaN;
             //precalc
             float dx = target.transform.position.x - transform.position.x;
@@ -44,40 +43,6 @@ public class BallisticAim : MonoBehaviour, IAim
             float v2 = currentTower.startMuzzleSpeed * currentTower.startMuzzleSpeed;
             float v4 = v2 * v2;
             float rootTerm = v4 - _gravity * (_gravity * targetX * targetX + 2 * targetY * v2);
-
-            // if (rootTerm < -25)
-            // {
-            //     resultBarrelAngle = float.NaN;
-            //     AimReset(currentTower);
-            //     Debug.Log(resultBarrelAngle);
-            // }
-
-            // float numerator = v2 - (float)Math.Sqrt(rootTerm);
-            // float denominator = _gravity * targetX;
-
-            // if (Mathf.Abs(denominator) < 0.0001f)
-            // {
-            //     resultBarrelAngle = float.NaN;
-            //     AimReset(currentTower);
-            // }
-
-            // float angleRad = (float)Math.Atan(numerator / denominator);
-            // float angleDeg = angleRad * (180f / (float)Math.PI);
-
-            // if (angleRad < 0)
-            // {
-            //     angleRad = (float)Math.PI + angleRad;
-            // }
-
-            // if (angleDeg <= -20f || angleDeg > 60f)
-            // {
-            //     resultBarrelAngle = float.NaN;
-            //     AimReset(currentTower);
-            // }
-
-            // resultBarrelAngle = angleRad * (180f / (float)Math.PI);
-            // resultBarrelAngle = Mathf.Clamp(resultBarrelAngle, -20f, 60f);
-
 
             if (rootTerm >= -25f)
             {

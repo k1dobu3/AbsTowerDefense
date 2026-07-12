@@ -2,18 +2,18 @@ using System.Collections;
 using UnityEngine;
 
 public class LineShoot : MonoBehaviour, IShooteable
-{   
+{
     [SerializeField]
     public AmmoSO _currentAmmo;
     private bool _canShoot = true;
     private GameObjectPool<GuidedProjectile> _pool;
 
-    public float CurrentProjectileSpeed 
+    public float CurrentProjectileSpeed
     {
         get
         {
             return _currentAmmo.ammoSpeed;
-        }         
+        }
     }
 
     public void Start()
@@ -28,11 +28,11 @@ public class LineShoot : MonoBehaviour, IShooteable
     private void SpawnProjectile(GameObject target = null)
     {
         GuidedProjectile crystal = _pool.GetObject();
-		if (crystal != null)
-		{
-			crystal.transform.position = transform.position;
-			crystal.Initialize(_currentAmmo, target);
-			crystal.SetPool(_pool);
+        if (crystal != null)
+        {
+            crystal.transform.position = transform.position;
+            crystal.Initialize(_currentAmmo, target);
+            crystal.SetPool(_pool);
         }
     }
 
@@ -41,8 +41,8 @@ public class LineShoot : MonoBehaviour, IShooteable
         if (_canShoot && target != null)
         {
             StartCoroutine(MakeShoot(fireSpeed, target));
-        }    
-    } 
+        }
+    }
 
 
     private IEnumerator MakeShoot(float fireSpeed, GameObject target)
@@ -54,10 +54,10 @@ public class LineShoot : MonoBehaviour, IShooteable
     }
 
     private void OnDestroy()
-	{
-		if (_pool != null)
-		{
-			_pool.ClearPool();	
-		}
-	}
+    {
+        if (_pool != null)
+        {
+            _pool.ClearPool();
+        }
+    }
 }
