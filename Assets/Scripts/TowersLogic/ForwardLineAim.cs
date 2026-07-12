@@ -5,7 +5,7 @@ public class ForwardLineAim : MonoBehaviour, IAim
     [Header("Default Aim Line")]
     [SerializeField] private Vector3 defaultRotationEuler = new Vector3(0, 0, 0);
     public bool IsAimed => true;
-    public void AimTarget(GameObject _target, float projectileSpeed, TowerDataSO currentTower)
+    public void AimTarget(GameObject _target, Vector3 predictedPosition, TowerDataSO currentTower)
     {
         if (currentTower.towerGunHeadMoveable)
         {
@@ -25,5 +25,10 @@ public class ForwardLineAim : MonoBehaviour, IAim
     public float CalculateFlightTime(Vector3 start, Vector3 target, float speed)
     {
         return 0;
+    }
+
+    public Vector3 GetPredictedPosition(GameObject target, Vector3 towerPosition, float projectileSpeed)
+    {
+        return (target.transform.position);
     }
 }

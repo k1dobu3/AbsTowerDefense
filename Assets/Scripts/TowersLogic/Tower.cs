@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Towers : MonoBehaviour
@@ -7,12 +8,9 @@ public class Towers : MonoBehaviour
 
     private TowerDataSO _currentTower;
     private GameObject _target;
-    private float _projectileSpeed;
-    // private float _timeToTarget;
     private IShooteable _shooter;
     private ITargetable _targetFinder;
     private IAim _targetAim;
-    private float _time;
 
     private void Awake()
     {
@@ -31,16 +29,15 @@ public class Towers : MonoBehaviour
         _shooter = GetComponent<IShooteable>();
         _targetFinder = GetComponent<ITargetable>();
         _targetAim = GetComponent<IAim>();
-        _projectileSpeed = _shooter.CurrentProjectileSpeed;
     }
 
     public void LateUpdate()
     {
         _target = _targetFinder.FindTarget(transform.position, _currentTower.fireRange);
         if (_target)
-        {
-            _time = _targetAim.CalculateFlightTime(transform.position, _target.transform.position, _currentTower.startMuzzleSpeed);
-            _targetAim.AimTarget(_target, _time, _currentTower);
+        {;
+            Vector3 predictedPostion = _targetAim.GetPredictedPosition(_target, transform.position, _currentTower.startMuzzleSpeed);
+            _targetAim.AimTarget(_target, predictedPostion, _currentTower);
             Debug.Log(_targetAim.IsAimed);
             if (_targetAim.IsAimed)
             {   

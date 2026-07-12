@@ -16,18 +16,11 @@ public class BallisticAim : MonoBehaviour, IAim
         _gravity = SceneRule.Instance.SceneGravity;
     }
 
-    public void AimTarget(GameObject target, float timeToTarget, TowerDataSO currentTower)
+    public void AimTarget(GameObject target, Vector3 predictedPosition, TowerDataSO currentTower)
     {
-        Rigidbody targetRB = target.GetComponent<Rigidbody>();
-        Vector3 targetVelocity = targetRB != null ? targetRB.linearVelocity : Vector3.zero;
-        Vector3 predictionTargetPosition = target.transform.position + targetVelocity * timeToTarget;
-
         if (currentTower.towerGunHeadMoveable) // rotate gun mounts
         {
-            //Rigidbody targetRB = target.GetComponent<Rigidbody>();
-            //Vector3 targetVelocity = targetRB != null ? targetRB.linearVelocity : Vector3.zero;
-            //Vector3 predictionTargetPosition = target.transform.position + (targetVelocity * timeToTarget);
-            Vector3 aimDirection = predictionTargetPosition - transform.position;
+            Vector3 aimDirection = predictedPosition - transform.position;
             aimDirection.y = 0;
 
             if (aimDirection != Vector3.zero)
@@ -44,9 +37,9 @@ public class BallisticAim : MonoBehaviour, IAim
         {
             float targetBarrelAngle = float.NaN;
             //precalc
-            float dx = predictionTargetPosition.x - transform.position.x;
-            float dz = predictionTargetPosition.z - transform.position.z;
-            float targetY = predictionTargetPosition.y - transform.position.y;
+            float dx = predictedPosition.x - transform.position.x;
+            float dz = predictedPosition.z - transform.position.z;
+            float targetY = predictedPosition.y - transform.position.y;
 
             float targetX = (float)Mathf.Sqrt(dx * dx + dz * dz);
 
@@ -117,16 +110,41 @@ public class BallisticAim : MonoBehaviour, IAim
         float height = direction.y;
         float v2 = speed * speed;
         float v4 = v2 * v2;
-        float root = v4 - _gravity * (_gravity * horizontalDistance * horizontalDistance + 2 * height *v2);
+        float root = v4 - _gravity * (_gravity * horizontalDistance * horizontalDistance + 2 * height * v2);
 
         if (root < 0)
         {
             return -1;
         }
 
-        float angle = Mathf.Atan((v2 - Mathf.Sqrt(root))/(_gravity * horizontalDistance));
+        float angle = Mathf.Atan((v2 - Mathf.Sqrt(root)) / (_gravity * horizontalDistance));
         float time = horizontalDistance / (speed * Mathf.Cos(angle));
 
         return time;
+    }
+
+    public Vector3 GetPredictedPosition(GameObject target, Vector3 towerPosition, float projectileSpeed)
+    {
+        Rigidbody targetRB = target.GetComponent<Rigidbody>();
+        Vector3 targetVelocity = targetRB != null ? targetRB.linearVelocity : Vector3.zero;
+        Vector3 currentPosition = target.transform.position;
+
+        float time = Vector3.Distance(towerPosition, currentPosition) / projectileSpeed;
+        Vector3 predictedPosition = currentPosition;
+
+        for (int i = 0; i < 4; i++)
+        {
+            predictedPosition = currentPosition + targetVelocity * time;
+
+            float newTime = CalculateFlightTime(towerPosition, predictedPosition, projectileSpeed);
+            if (newTime < 0)
+            {
+                break;
+            }
+
+            time = newTime;
+        }
+
+        return predictedPosition;
     }
 }

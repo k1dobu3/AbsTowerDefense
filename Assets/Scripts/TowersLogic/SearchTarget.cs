@@ -30,9 +30,4 @@ public class SearchTarget : MonoBehaviour, ITargetable
 
         return nearestTarget;
     }
-
-    // public float CalcTimeToTarget(float projectileSpeed)
-    // {
-    //     return _distanceToActualTarget / projectileSpeed;
-    // }
 }
