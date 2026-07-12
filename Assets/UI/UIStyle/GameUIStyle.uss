@@ -1,0 +1,38 @@
+:root {
+    --color-white: white;
+}
+
+Label {
+    font-size: 16px;
+    color: var(--color-white);
+    -unity-font-style: bold;
+    align-self: center;
+}
+
+#GameRealtimeStats, #GameRealtimeTimers {
+    display: flex;
+    max-width: 300px;
+    background-color: rgba(0, 0, 0, 0.7);
+    opacity: 1;
+    border-radius: 16px;
+    border-width: 3px;
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+#KillCounter, #AllGameTimer {
+    font-size: 24px;
+    -unity-font-style: bold;
+    color: var(--color-white);
+    width: 100%;
+    height: auto;
+    padding: 6px 6px 6px 6px;
+}
+
+#MonsterSpawnTimer {
+    font-size: 24px;
+    -unity-font-style: bold;
+    color: rgb(120, 255, 120);
+    width: 100%;
+    height: auto;
+    padding: 6px 6px 6px 6px;
+}
