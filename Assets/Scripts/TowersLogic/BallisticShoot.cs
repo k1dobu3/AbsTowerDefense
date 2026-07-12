@@ -29,7 +29,7 @@ public class BallisticShoot : MonoBehaviour, IShooteable
 
     public void TryShoot(float fireSpeed, GameObject target)
     {
-        if (_canShoot && RaycastCheck(target))
+        if (_canShoot )
         {
             StartCoroutine(MakeShoot(fireSpeed, target));
         }
@@ -47,31 +47,6 @@ public class BallisticShoot : MonoBehaviour, IShooteable
         return projectile;
     }
 
-    private bool RaycastCheck(GameObject target)
-    {
-        Vector3 modifiedPosition = _shootStartPoint.position;
-
-        Ray ray = new Ray(modifiedPosition, (target.transform.position - modifiedPosition).normalized);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, 100f))
-        {
-            Debug.DrawLine(ray.origin, hit.point, Color.red, 5.0f);
-            Debug.Log("Прицел в: " + hit.collider.name);
-            //Debug.LogError("EX");  //for debug pause
-            if (target != null && hit.collider.CompareTag("Monster"))
-            {
-                return true;
-            }
-        }
-        else
-        {
-            Debug.DrawRay(ray.origin, ray.direction * 100f, Color.green, 5.0f);
-            return false;
-        }
-        return false;
-    }
-
     private IEnumerator MakeShoot(float fireSpeed, GameObject target)
     {
         _canShoot = false;
@@ -87,7 +62,6 @@ public class BallisticShoot : MonoBehaviour, IShooteable
         Debug.Log($"Projectile = {projectile}");
         Debug.Log($"ShootPoint = {_shootStartPoint}");
         projectile.transform.SetPositionAndRotation(_shootStartPoint.position, _shootStartPoint.rotation);
-        // projectile.rb.linearVelocity = velocity;
         projectile.rb.linearVelocity =_shootStartPoint.forward * fireSpeed;        
         
         yield return new WaitForSeconds(fireSpeed);
