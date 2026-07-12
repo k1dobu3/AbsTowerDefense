@@ -8,7 +8,6 @@ public class BallisticShoot : MonoBehaviour, IShooteable
 {
     [SerializeField] public AmmoSO _currentAmmo;
     [SerializeField] public Transform _shootStartPoint;
-    private bool _canShoot = true;
     private GameObjectPool<CannonProjectile> _pool;
 
     public float CurrentProjectileSpeed
@@ -29,25 +28,25 @@ public class BallisticShoot : MonoBehaviour, IShooteable
 
     public void TryShoot(float fireSpeed, GameObject target)
     {
-        if (_canShoot && RaycastCheck(target))
+        if (RaycastCheck(target))
         {
             StartCoroutine(MakeShoot(fireSpeed, target));
         }
     }
 
-    private Vector3 CalculateBallisticVelocity(Vector3 start, Vector3 target, float speed)
-    {
-        Vector3 direction = target - start;
+    // private Vector3 CalculateBallisticVelocity(Vector3 start, Vector3 target, float speed)
+    // {
+    //     Vector3 direction = target - start;
 
-        float distance = new Vector3(direction.x, 0f, direction.z).magnitude;
+    //     float distance = new Vector3(direction.x, 0f, direction.z).magnitude;
 
-        float time = distance / speed;
+    //     float time = distance / speed;
 
-        Vector3 velocity = direction / time;
-        velocity.y -= 0.5f * Physics.gravity.y * time;
+    //     Vector3 velocity = direction / time;
+    //     velocity.y -= 0.5f * Physics.gravity.y * time;
 
-        return velocity;
-    }
+    //     return velocity;
+    // }
 
     private CannonProjectile SpawnProjectile()
     {
@@ -92,17 +91,15 @@ public class BallisticShoot : MonoBehaviour, IShooteable
 
     private IEnumerator MakeShoot(float fireSpeed, GameObject target)
     {
-        _canShoot = false;
         Debug.Log("Пиу");
         CannonProjectile projectile = SpawnProjectile();
 
-        Vector3 velocity = CalculateBallisticVelocity(_shootStartPoint.position, target.transform.position, fireSpeed);
+        // Vector3 velocity = CalculateBallisticVelocity(_shootStartPoint.position, target.transform.position, fireSpeed);
         projectile.transform.SetPositionAndRotation(_shootStartPoint.position, _shootStartPoint.rotation);
-        projectile.rb.linearVelocity = velocity;
-        Debug.Log(_shootStartPoint.transform);
+        // projectile.rb.linearVelocity = velocity;
+        projectile.rb.linearVelocity =_shootStartPoint.forward * fireSpeed;        
         
         yield return new WaitForSeconds(fireSpeed);
-        _canShoot = true;
     }
 
 }

@@ -4,7 +4,7 @@ public class ForwardLineAim : MonoBehaviour, IAim
 {
     [Header("Default Aim Line")]
     [SerializeField] private Vector3 defaultRotationEuler = new Vector3(0, 0, 0);
-    
+    public bool IsAimed => true;
     public void AimTarget(GameObject _target, float projectileSpeed, TowerDataSO currentTower)
     {
         if (currentTower.towerGunHeadMoveable)

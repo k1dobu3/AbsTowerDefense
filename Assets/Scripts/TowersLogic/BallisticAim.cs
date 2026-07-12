@@ -6,6 +6,9 @@ public class BallisticAim : MonoBehaviour, IAim
     [SerializeField] private Transform childTransform;
     [Header("Default Aim Line")]
     [SerializeField] private Vector3 defaultRotationEuler = new Vector3(0, 0, 0);
+    public bool IsBodyAimed { get; private set; }
+    public bool IsBarrelAimed { get; private set; }
+    public bool IsAimed => IsBodyAimed && IsBarrelAimed;
     private float _gravity;
 
     private void Start()
@@ -26,7 +29,10 @@ public class BallisticAim : MonoBehaviour, IAim
             if (aimDirection != Vector3.zero)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(aimDirection);
-                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * currentTower.rotationSpeed);
+                //transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * currentTower.rotationSpeed);
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, currentTower.rotationSpeed * Time.deltaTime);
+                IsBodyAimed = Quaternion.Angle(transform.rotation, targetRotation) < 2f;
+                Debug.Log($"IsBodyAimed because {Quaternion.Angle(transform.rotation, targetRotation)} < then 2");
             }
         }
 
@@ -58,7 +64,7 @@ public class BallisticAim : MonoBehaviour, IAim
                         angleRad = Mathf.PI + angleRad;
                     }
                     float angleDeg = angleRad * (180f / (float)Math.PI);
-                    if (angleDeg > -20f || angleDeg <= 60f)
+                    if (angleDeg > -20f && angleDeg <= 60f)
                     {
                         targetBarrelAngle = Mathf.Clamp(angleDeg, -20f, 60f);
                     }
@@ -72,6 +78,8 @@ public class BallisticAim : MonoBehaviour, IAim
                 float smoothedAngle = Mathf.LerpAngle(currentAngle, targetBarrelAngle, Time.deltaTime * currentTower.rotationSpeed * 1.8f);
 
                 childTransform.localEulerAngles = new Vector3(-smoothedAngle, 0, 0);
+                IsBarrelAimed = Mathf.Abs(smoothedAngle - targetBarrelAngle) < 1f;
+                Debug.Log($"IsBarrelAimed because {Mathf.Abs(smoothedAngle - targetBarrelAngle)} < then 1");
             }
             else
             {
@@ -82,6 +90,8 @@ public class BallisticAim : MonoBehaviour, IAim
 
     public void AimReset(TowerDataSO currentTower)
     {
+        IsBodyAimed = false;
+        IsBarrelAimed = false;
         if (currentTower.towerGunHeadMoveable)
         {
             Quaternion defaultRot = Quaternion.Euler(defaultRotationEuler);
