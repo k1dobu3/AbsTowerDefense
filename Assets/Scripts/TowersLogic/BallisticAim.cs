@@ -18,11 +18,15 @@ public class BallisticAim : MonoBehaviour, IAim
 
     public void AimTarget(GameObject target, float timeToTarget, TowerDataSO currentTower)
     {
+        Rigidbody targetRB = target.GetComponent<Rigidbody>();
+        Vector3 targetVelocity = targetRB != null ? targetRB.linearVelocity : Vector3.zero;
+        Vector3 predictionTargetPosition = target.transform.position + targetVelocity * timeToTarget;
+
         if (currentTower.towerGunHeadMoveable) // rotate gun mounts
         {
-            Rigidbody targetRB = target.GetComponent<Rigidbody>();
-            Vector3 targetVelocity = targetRB != null ? targetRB.linearVelocity : Vector3.zero;
-            Vector3 predictionTargetPosition = target.transform.position + (targetVelocity * timeToTarget);
+            //Rigidbody targetRB = target.GetComponent<Rigidbody>();
+            //Vector3 targetVelocity = targetRB != null ? targetRB.linearVelocity : Vector3.zero;
+            //Vector3 predictionTargetPosition = target.transform.position + (targetVelocity * timeToTarget);
             Vector3 aimDirection = predictionTargetPosition - transform.position;
             aimDirection.y = 0;
 
@@ -40,9 +44,10 @@ public class BallisticAim : MonoBehaviour, IAim
         {
             float targetBarrelAngle = float.NaN;
             //precalc
-            float dx = target.transform.position.x - transform.position.x;
-            float dz = target.transform.position.z - transform.position.z;
-            float targetY = target.transform.position.y - transform.position.y;
+            float dx = predictionTargetPosition.x - transform.position.x;
+            float dz = predictionTargetPosition.z - transform.position.z;
+            float targetY = predictionTargetPosition.y - transform.position.y;
+
             float targetX = (float)Mathf.Sqrt(dx * dx + dz * dz);
 
 
