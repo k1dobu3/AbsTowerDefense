@@ -4,6 +4,8 @@ using UnityEngine;
 public class BallisticAim : MonoBehaviour, IAim
 {
     [SerializeField] private Transform childTransform;
+    [Header("Default Aim Line")]
+    [SerializeField] private Vector3 defaultRotationEuler = new Vector3(0, 0, 0);
     private float _gravity;
 
     private void Start()
@@ -11,9 +13,9 @@ public class BallisticAim : MonoBehaviour, IAim
         _gravity = SceneRule.Instance.SceneGravity;
     }
 
-    public void AimTarget(bool rotateable, GameObject target, float timeToTarget, TowerDataSO currentTower)
+    public void AimTarget(GameObject target, float timeToTarget, TowerDataSO currentTower)
     {
-        if (rotateable) // rotate gun mounts
+        if (currentTower.towerGunHeadMoveable) // rotate gun mounts
         {
             Rigidbody targetRB = target.GetComponent<Rigidbody>();
             Vector3 targetVelocity = targetRB != null ? targetRB.linearVelocity : Vector3.zero;
@@ -30,7 +32,8 @@ public class BallisticAim : MonoBehaviour, IAim
 
         if (true) //incile gun barrel
         {
-            float resultBarrelAngle = float.MaxValue;
+            // float resultBarrelAngle = float.MaxValue;
+            float targetBarrelAngle = float.NaN;
             //precalc
             float dx = target.transform.position.x - transform.position.x;
             float dz = target.transform.position.z - transform.position.z;
@@ -42,54 +45,87 @@ public class BallisticAim : MonoBehaviour, IAim
             float v4 = v2 * v2;
             float rootTerm = v4 - _gravity * (_gravity * targetX * targetX + 2 * targetY * v2);
 
-            if (rootTerm < -25)
+            // if (rootTerm < -25)
+            // {
+            //     resultBarrelAngle = float.NaN;
+            //     AimReset(currentTower);
+            //     Debug.Log(resultBarrelAngle);
+            // }
+
+            // float numerator = v2 - (float)Math.Sqrt(rootTerm);
+            // float denominator = _gravity * targetX;
+
+            // if (Mathf.Abs(denominator) < 0.0001f)
+            // {
+            //     resultBarrelAngle = float.NaN;
+            //     AimReset(currentTower);
+            // }
+
+            // float angleRad = (float)Math.Atan(numerator / denominator);
+            // float angleDeg = angleRad * (180f / (float)Math.PI);
+
+            // if (angleRad < 0)
+            // {
+            //     angleRad = (float)Math.PI + angleRad;
+            // }
+
+            // if (angleDeg <= -20f || angleDeg > 60f)
+            // {
+            //     resultBarrelAngle = float.NaN;
+            //     AimReset(currentTower);
+            // }
+
+            // resultBarrelAngle = angleRad * (180f / (float)Math.PI);
+            // resultBarrelAngle = Mathf.Clamp(resultBarrelAngle, -20f, 60f);
+
+
+            if (rootTerm >= -25f)
             {
-                resultBarrelAngle = float.NaN;
-                Debug.Log(resultBarrelAngle);
+                float numerator = v2 - Mathf.Sqrt(rootTerm);
+                float denominator = _gravity * targetX;
+
+                if (Mathf.Abs(denominator) > 0.0001f)
+                {
+                    float angleRad = Mathf.Atan(numerator / denominator);
+
+                    if (angleRad < 0)
+                    {
+                        angleRad = Mathf.PI + angleRad;
+                    }
+                    float angleDeg = angleRad * (180f / (float)Math.PI);
+                    if (angleDeg > -20f || angleDeg <= 60f)
+                    {
+                        targetBarrelAngle = Mathf.Clamp(angleDeg, -20f, 60f);
+                    }
+
+                }
             }
 
-            float numerator = v2 - (float)Math.Sqrt(rootTerm);
-            float denominator = _gravity * targetX;
-
-            if (Mathf.Abs(denominator) < 0.0001f)
+            if (!float.IsNaN(targetBarrelAngle))
             {
-                resultBarrelAngle = float.NaN;
+                float currentAngle = -childTransform.localEulerAngles.x;
+                float smoothedAngle = Mathf.LerpAngle(currentAngle, targetBarrelAngle, Time.deltaTime * currentTower.rotationSpeed * 1.8f);
+
+                childTransform.localEulerAngles = new Vector3(-smoothedAngle, 0, 0);
             }
-
-            float angleRad = (float)Math.Atan(numerator / denominator);
-            float angleDeg = angleRad * (180f / (float)Math.PI);
-
-            if (angleRad < 0)
+            else
             {
-                angleRad = (float)Math.PI + angleRad;
-            }
-
-            if (angleDeg < -30f || angleDeg > 90f)
-            {
-                resultBarrelAngle = float.NaN;
-            }
-
-            resultBarrelAngle = angleRad * (180f / (float)Math.PI);
-            //Debug.Log(resultBarrelAngle);
-
-            if (resultBarrelAngle >= -30f)
-            {
-                childTransform.localEulerAngles = new Vector3(-resultBarrelAngle, 0, 0);
+                AimReset(currentTower);
             }
         }
     }
 
-    public void AimReset(bool rotateable, Vector3 defaultRotationEuler, TowerDataSO currentTower)
+    public void AimReset(TowerDataSO currentTower)
     {
-        if (rotateable)
+        if (currentTower.towerGunHeadMoveable)
         {
             Quaternion defaultRot = Quaternion.Euler(defaultRotationEuler);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, defaultRot, Time.deltaTime * currentTower.rotationSpeed);
         }
         if (true)
         {
-            Quaternion defaultRot = Quaternion.Euler(0,0,0);
-            childTransform.localRotation = Quaternion.RotateTowards(childTransform.localRotation, defaultRot, Time.deltaTime * currentTower.barrelRotationSpeed);
+            Quaternion defaultBarrelRot = Quaternion.Euler(defaultRotationEuler);
+            childTransform.localRotation = Quaternion.RotateTowards(childTransform.localRotation, defaultBarrelRot, Time.deltaTime * currentTower.barrelRotationSpeed);
         }
     }
 }

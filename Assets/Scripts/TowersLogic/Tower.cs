@@ -2,12 +2,8 @@ using UnityEngine;
 
 public class Towers : MonoBehaviour
 {
-    [Header("Default Aim Line")]
-    [SerializeField]
-    private Vector3 defaultRotationEuler = new Vector3(0, 0, 0);
     [Header("Data of tower type")]
-    [SerializeField]
-    private TowerDataSO _data;
+    [SerializeField] private TowerDataSO _data;
 
     private TowerDataSO _currentTower;
     private GameObject _target;
@@ -43,12 +39,13 @@ public class Towers : MonoBehaviour
         if (_target)
         {
             _timeToTarget = _targetFinder.CalcTimeToTarget(_projectileSpeed);
-            _targetAim.AimTarget(_currentTower.towerGunHeadMoveable, _target, _projectileSpeed, _currentTower);
-            _shooter.TryShoot(_currentTower.fireSpeedCD, _target);
+            _targetAim.AimTarget(_target, _projectileSpeed, _currentTower);
+            //_shooter.TryShoot(_currentTower.fireSpeedCD, _target);
         }
-        else
+
+        if (_target == null)
         {
-            _targetAim.AimReset(_currentTower.towerGunHeadMoveable, defaultRotationEuler, _currentTower);
+            _targetAim.AimReset(_currentTower);
         }
     }
 
