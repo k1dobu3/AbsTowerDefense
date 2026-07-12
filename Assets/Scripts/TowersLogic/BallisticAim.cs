@@ -75,11 +75,11 @@ public class BallisticAim : MonoBehaviour, IAim
             if (!float.IsNaN(targetBarrelAngle))
             {
                 float currentAngle = -childTransform.localEulerAngles.x;
-                float smoothedAngle = Mathf.LerpAngle(currentAngle, targetBarrelAngle, Time.deltaTime * currentTower.rotationSpeed * 1.8f);
-
+                //float smoothedAngle = Mathf.LerpAngle(currentAngle, targetBarrelAngle, Time.deltaTime * currentTower.rotationSpeed * 1.8f);
+                float smoothedAngle = Mathf.MoveTowardsAngle(currentAngle, targetBarrelAngle, currentTower.barrelRotationSpeed * Time.deltaTime);
                 childTransform.localEulerAngles = new Vector3(-smoothedAngle, 0, 0);
-                IsBarrelAimed = Mathf.Abs(smoothedAngle - targetBarrelAngle) < 1f;
-                Debug.Log($"IsBarrelAimed because {Mathf.Abs(smoothedAngle - targetBarrelAngle)} < then 1");
+                IsBarrelAimed = Mathf.Abs(Mathf.DeltaAngle(smoothedAngle, targetBarrelAngle)) < 3f;
+                Debug.Log($"IsBarrelAimed because {Mathf.Abs(Mathf.DeltaAngle(smoothedAngle, targetBarrelAngle))} < then 1");
             }
             else
             {
@@ -102,5 +102,26 @@ public class BallisticAim : MonoBehaviour, IAim
             Quaternion defaultBarrelRot = Quaternion.Euler(defaultRotationEuler);
             childTransform.localRotation = Quaternion.RotateTowards(childTransform.localRotation, defaultBarrelRot, Time.deltaTime * currentTower.barrelRotationSpeed);
         }
+    }
+
+    public float CalculateFlightTime(Vector3 start, Vector3 target, float speed)
+    {
+        Vector3 direction = target - start;
+        float horizontalDistance = new Vector3(direction.x, 0, direction.z).magnitude;
+
+        float height = direction.y;
+        float v2 = speed * speed;
+        float v4 = v2 * v2;
+        float root = v4 - _gravity * (_gravity * horizontalDistance * horizontalDistance + 2 * height *v2);
+
+        if (root < 0)
+        {
+            return -1;
+        }
+
+        float angle = Mathf.Atan((v2 - Mathf.Sqrt(root))/(_gravity * horizontalDistance));
+        float time = horizontalDistance / (speed * Mathf.Cos(angle));
+
+        return time;
     }
 }

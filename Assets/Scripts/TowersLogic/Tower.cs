@@ -8,10 +8,11 @@ public class Towers : MonoBehaviour
     private TowerDataSO _currentTower;
     private GameObject _target;
     private float _projectileSpeed;
-    private float _timeToTarget;
+    // private float _timeToTarget;
     private IShooteable _shooter;
     private ITargetable _targetFinder;
     private IAim _targetAim;
+    private float _time;
 
     private void Awake()
     {
@@ -38,8 +39,8 @@ public class Towers : MonoBehaviour
         _target = _targetFinder.FindTarget(transform.position, _currentTower.fireRange);
         if (_target)
         {
-            _timeToTarget = _targetFinder.CalcTimeToTarget(_projectileSpeed);
-            _targetAim.AimTarget(_target, _projectileSpeed, _currentTower);
+            _time = _targetAim.CalculateFlightTime(transform.position, _target.transform.position, _currentTower.startMuzzleSpeed);
+            _targetAim.AimTarget(_target, _time, _currentTower);
             Debug.Log(_targetAim.IsAimed);
             if (_targetAim.IsAimed)
             {   

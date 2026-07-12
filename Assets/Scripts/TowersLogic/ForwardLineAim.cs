@@ -21,4 +21,9 @@ public class ForwardLineAim : MonoBehaviour, IAim
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(defaultRotationEuler), Time.deltaTime * currentTower.rotationSpeed);
         }
     }
+
+    public float CalculateFlightTime(Vector3 start, Vector3 target, float speed)
+    {
+        return 0;
+    }
 }

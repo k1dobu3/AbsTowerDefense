@@ -9,6 +9,7 @@ public class BallisticShoot : MonoBehaviour, IShooteable
     [SerializeField] public AmmoSO _currentAmmo;
     [SerializeField] public Transform _shootStartPoint;
     private GameObjectPool<CannonProjectile> _pool;
+    private bool _canShoot = true;
 
     public float CurrentProjectileSpeed
     {
@@ -28,44 +29,26 @@ public class BallisticShoot : MonoBehaviour, IShooteable
 
     public void TryShoot(float fireSpeed, GameObject target)
     {
-        if (RaycastCheck(target))
+        if (_canShoot && RaycastCheck(target))
         {
             StartCoroutine(MakeShoot(fireSpeed, target));
         }
     }
 
-    // private Vector3 CalculateBallisticVelocity(Vector3 start, Vector3 target, float speed)
-    // {
-    //     Vector3 direction = target - start;
-
-    //     float distance = new Vector3(direction.x, 0f, direction.z).magnitude;
-
-    //     float time = distance / speed;
-
-    //     Vector3 velocity = direction / time;
-    //     velocity.y -= 0.5f * Physics.gravity.y * time;
-
-    //     return velocity;
-    // }
-
     private CannonProjectile SpawnProjectile()
     {
         CannonProjectile projectile = _pool.GetObject();
-        if (projectile != null)
+        if (projectile == null)
         {
-            projectile.Initialize(_currentAmmo);
-            projectile.SetPool(_pool);
+            return null;
         }
+        projectile.Initialize(_currentAmmo);
+        projectile.SetPool(_pool);
         return projectile;
     }
 
     private bool RaycastCheck(GameObject target)
     {
-        // Vector3 modifiedPosition = transform.position
-        //    + transform.forward * 0
-        //    + transform.up * 1
-        //    + transform.right * 2;
-
         Vector3 modifiedPosition = _shootStartPoint.position;
 
         Ray ray = new Ray(modifiedPosition, (target.transform.position - modifiedPosition).normalized);
@@ -91,15 +74,24 @@ public class BallisticShoot : MonoBehaviour, IShooteable
 
     private IEnumerator MakeShoot(float fireSpeed, GameObject target)
     {
+        _canShoot = false;
         Debug.Log("Пиу");
         CannonProjectile projectile = SpawnProjectile();
-
+        if (projectile == null)
+        {
+            Debug.LogError("Выстрел отменен: projectile == null");
+            _canShoot = true;
+            yield break;
+        }
         // Vector3 velocity = CalculateBallisticVelocity(_shootStartPoint.position, target.transform.position, fireSpeed);
+        Debug.Log($"Projectile = {projectile}");
+        Debug.Log($"ShootPoint = {_shootStartPoint}");
         projectile.transform.SetPositionAndRotation(_shootStartPoint.position, _shootStartPoint.rotation);
         // projectile.rb.linearVelocity = velocity;
         projectile.rb.linearVelocity =_shootStartPoint.forward * fireSpeed;        
         
         yield return new WaitForSeconds(fireSpeed);
+        _canShoot = true;
     }
 
 }
