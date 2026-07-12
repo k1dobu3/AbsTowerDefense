@@ -6,6 +6,7 @@ public class LineShoot : MonoBehaviour, IShooteable
     [SerializeField]
     public AmmoSO _currentAmmo;
     private bool _canShoot = true;
+    private GameObjectPool<GuidedProjectile> _pool;
 
     public float CurrentProjectileSpeed 
     {
@@ -13,6 +14,14 @@ public class LineShoot : MonoBehaviour, IShooteable
         {
             return _currentAmmo.ammoSpeed;
         }         
+    }
+
+    public void Start()
+    {
+        if (_pool == null)
+        {
+            _pool = new GameObjectPool<GuidedProjectile>(_currentAmmo.ammoProjectilePrefab, 5, "CrystalTower");
+        }
     }
 
     public void TryShoot(float fireSpeed, Transform target)
@@ -27,9 +36,9 @@ public class LineShoot : MonoBehaviour, IShooteable
     private IEnumerator MakeShoot(float fireSpeed, Transform target)
     {
         _canShoot = false;
-        Instantiate(_currentAmmo.ammoProjectilePrefab, transform.position, transform.rotation); //заменить на пул, добавит поворот к цели
+        Instantiate(_currentAmmo.ammoProjectilePrefab, transform.position, transform.rotation); //заменить на пул
         var projectileBeh = _currentAmmo.ammoProjectilePrefab.GetComponent<GuidedProjectile> ();
-		projectileBeh.m_target = target.gameObject;
+        projectileBeh.Initialize(_currentAmmo, target.gameObject);
         yield return new WaitForSeconds(fireSpeed);
         _canShoot = true;
     }

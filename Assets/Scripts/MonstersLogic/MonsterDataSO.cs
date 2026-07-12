@@ -8,5 +8,5 @@ public class MonsterDataSO : ScriptableObject
     public float maxHP;
     public float speed = 0.1f;
     public int tokenPrice = 1;
-    public Monster monsterPrefab;
+    public GameObject monsterPrefab;
 }

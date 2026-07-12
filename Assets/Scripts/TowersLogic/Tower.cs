@@ -16,7 +16,7 @@ public class Towers : MonoBehaviour
     private IShooteable _shooter;
     private ITargetable _targetFinder;
     private IAim _targetAim;
-
+    
     private void Awake()
     {
         if (_data == null)

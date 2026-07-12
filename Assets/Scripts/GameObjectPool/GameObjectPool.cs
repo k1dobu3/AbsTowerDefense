@@ -5,12 +5,12 @@ using UnityEngine;
 
 public class GameObjectPool<T> where T : Component, IPoolable
 {
-    private readonly T _prefab;
+    private readonly GameObject _prefab;
     private readonly Transform parentContainer;
     private readonly Queue<T> pool = new();
     private int _initialSize;
 
-    public GameObjectPool(T prefab, int initialMaxSize, string poolName = null)
+    public GameObjectPool(GameObject prefab, int initialMaxSize, string poolName = null)
     {
         if (prefab == null)
         {
@@ -35,7 +35,8 @@ public class GameObjectPool<T> where T : Component, IPoolable
 
     private T CreateNewInstance()
     {
-        T obj = GameObject.Instantiate(_prefab, parentContainer);
+        GameObject objGO = GameObject.Instantiate(_prefab, parentContainer);
+        T obj = objGO.GetComponent<T>();
         obj.gameObject.SetActive(false);
         pool.Enqueue(obj);
         return obj;

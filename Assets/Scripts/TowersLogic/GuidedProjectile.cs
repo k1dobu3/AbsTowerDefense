@@ -1,20 +1,44 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GuidedProjectile : MonoBehaviour {
-	public GameObject m_target;
-	public float m_speed = 0.2f;
-	public float m_damage = 1500;
+public class GuidedProjectile : MonoBehaviour, IPoolable
+{
+	private GameObject _target;
+	private AmmoSO _currentAmmoData;
+	private GameObjectPool<GuidedProjectile> _pool;
+
+	public void Initialize(AmmoSO ammoData, GameObject target)
+	{
+		_currentAmmoData = ammoData;
+		_target = target;
+	}
+	public void SetPool(GameObjectPool<GuidedProjectile> pool) 
+	{
+		_pool = pool;
+	}
+
+	public void OnSpawn()
+    {
+        
+    }
+
+    public void OnDespawn()
+    {
+		_target = null;
+		_pool.ReturnObject(this);
+    }
+
 
 	void Update () {
-		if (m_target == null || !m_target.gameObject.activeInHierarchy) {
+		if (_target == null || !_target.gameObject.activeInHierarchy) {
 			Destroy (gameObject);
+			Debug.Log("Полетел");
 			return;
 		}
 
-		var translation = m_target.transform.position - transform.position;
-		if (translation.magnitude > m_speed) {
-			translation = translation.normalized * m_speed;
+		var translation = _target.transform.position - transform.position;
+		if (translation.magnitude > _currentAmmoData.ammoSpeed) {
+			translation = translation.normalized * _currentAmmoData.ammoSpeed;
 		}
 		transform.Translate (translation);
 	}
@@ -27,7 +51,7 @@ public class GuidedProjectile : MonoBehaviour {
 		if (monster == null)
 			return;
 
-		monster.TakeDamage (1000000f, false);
-		Destroy (gameObject);
+		monster.TakeDamage (_currentAmmoData.ammoDamage, false);
+		_pool.ReturnObject(this);
 	}
 }

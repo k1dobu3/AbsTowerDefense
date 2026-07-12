@@ -25,9 +25,9 @@ public class BallisticShoot : MonoBehaviour, IShooteable
             Vector3 modifiedPosition = transform.position
            + transform.forward * 0
            + transform.up * 1
-           + transform.right * 0;
+           + transform.right * 2;
 
-            Ray ray = new Ray(modifiedPosition, transform.forward);
+            Ray ray = new Ray(modifiedPosition, (target.position - modifiedPosition).normalized);
             RaycastHit hit;
 
             if (Physics.Raycast(ray, out hit, 100f))

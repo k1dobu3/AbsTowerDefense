@@ -6,7 +6,6 @@ public class TowerDataSO : ScriptableObject
     [Header("Tower Common Data")]
     public string towerName = "Tower";
     public float maxHP = 100f;
-    public float damage = 1f;
     public float fireRange = 10f;
     public float fireSpeedCD = 2f;
     public GameObject projectilePrefab;

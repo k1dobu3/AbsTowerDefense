@@ -28,7 +28,6 @@ public class Monster : MonoBehaviour, IPoolable, IDamageable
 	{
 		_moveTarget = null;
 		_pool.ReturnObject(this);
-
 	}
 
 	public void SetMoveTarget(GameObject target) 
