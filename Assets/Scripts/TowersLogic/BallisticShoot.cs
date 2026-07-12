@@ -27,11 +27,11 @@ public class BallisticShoot : MonoBehaviour, IShooteable
         }
     }
 
-    public void TryShoot(float fireSpeed, GameObject target)
+    public void TryShoot(float fireSpeed, GameObject target, float startMuzzleSpeed, Vector3 predictedPos)
     {
         if (_canShoot )
         {
-            StartCoroutine(MakeShoot(fireSpeed, target));
+            StartCoroutine(MakeShoot(fireSpeed, target, startMuzzleSpeed, predictedPos));
         }
     }
 
@@ -47,22 +47,34 @@ public class BallisticShoot : MonoBehaviour, IShooteable
         return projectile;
     }
 
-    private IEnumerator MakeShoot(float fireSpeed, GameObject target)
+    private IEnumerator MakeShoot(float fireSpeed, GameObject target, float startMuzzleSpeed, Vector3? predictedPos = null)
     {
         _canShoot = false;
-        Debug.Log("Пиу");
+        // Debug.Log("Пиу")
         CannonProjectile projectile = SpawnProjectile();
+        Debug.LogError("1");
         if (projectile == null)
         {
             Debug.LogError("Выстрел отменен: projectile == null");
             _canShoot = true;
             yield break;
         }
-        // Vector3 velocity = CalculateBallisticVelocity(_shootStartPoint.position, target.transform.position, fireSpeed);
+        
+        Vector3 shootDirection;
+
+        if (predictedPos.HasValue)
+        {
+            shootDirection = (predictedPos.Value - _shootStartPoint.position).normalized;
+        }
+        else
+        {
+            shootDirection = _shootStartPoint.forward;
+        }
+
         Debug.Log($"Projectile = {projectile}");
         Debug.Log($"ShootPoint = {_shootStartPoint}");
-        projectile.transform.SetPositionAndRotation(_shootStartPoint.position, _shootStartPoint.rotation);
-        projectile.rb.linearVelocity =_shootStartPoint.forward * fireSpeed;        
+        projectile.transform.SetPositionAndRotation(_shootStartPoint.position, Quaternion.LookRotation(shootDirection));
+        projectile.rb.linearVelocity = shootDirection * startMuzzleSpeed;        
         
         yield return new WaitForSeconds(fireSpeed);
         _canShoot = true;

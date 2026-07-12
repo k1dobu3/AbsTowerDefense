@@ -31,17 +31,19 @@ public class Towers : MonoBehaviour
         _targetAim = GetComponent<IAim>();
     }
 
-    public void LateUpdate()
+    public void FixedUpdate()
     {
         _target = _targetFinder.FindTarget(transform.position, _currentTower.fireRange);
         if (_target)
-        {;
+        {
+            ;
             Vector3 predictedPostion = _targetAim.GetPredictedPosition(_target, transform.position, _currentTower.startMuzzleSpeed);
             _targetAim.AimTarget(_target, predictedPostion, _currentTower);
             Debug.Log(_targetAim.IsAimed);
             if (_targetAim.IsAimed)
-            {   
-                _shooter.TryShoot(_currentTower.startMuzzleSpeed, _target);
+            {
+                Vector3 predictedPos = _targetAim.GetPredictedPosition(_target, transform.position, _currentTower.startMuzzleSpeed);
+                _shooter.TryShoot(_currentTower.fireSpeedCD, _target, _currentTower.startMuzzleSpeed, predictedPos);
             }
         }
 

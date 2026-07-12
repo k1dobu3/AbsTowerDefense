@@ -21,6 +21,7 @@ public class SceneRule : MonoBehaviour
             return;
         }
         SceneGravity = _currentPhysicRule.gravityG;
+        Physics.gravity = new Vector3(0, -SceneGravity, 0);
     }
 
 }

@@ -36,7 +36,7 @@ public class LineShoot : MonoBehaviour, IShooteable
         }
     }
 
-    public void TryShoot(float fireSpeed, GameObject target)
+    public void TryShoot(float fireSpeed, GameObject target, float startMuzzleSpeed, Vector3 predictedPos)
     {
         if (_canShoot && target != null)
         {

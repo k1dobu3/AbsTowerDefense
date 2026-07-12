@@ -18,7 +18,7 @@ public class PlayerViewPresenter
         if (GameManager.Instance != null)
         {
             GameManager.Instance.OnKillsCountChanged += UpdateModelKills;
-            UpdateModelKills(GameManager.Instance._gameKills);
+            GameManager.Instance.OnGameTimeWasChanged += UpdateModelGameTimer;
         }
         
         _view.Initialize();
@@ -28,6 +28,11 @@ public class PlayerViewPresenter
     public void UpdateViewTimer()
     {
         _view.TimersUpdate(_model);
+    }
+
+    private void UpdateModelGameTimer(float gameTime)
+    {
+        _model.UpdateGameTimer(gameTime);
     }
 
     private void UpdateModelKills(int kills)
@@ -46,6 +51,7 @@ public class PlayerViewPresenter
         if (GameManager.Instance != null)
         {
             GameManager.Instance.OnKillsCountChanged -= UpdateModelKills;
+            GameManager.Instance.OnGameTimeWasChanged -= UpdateModelGameTimer;
         }
     }
 }

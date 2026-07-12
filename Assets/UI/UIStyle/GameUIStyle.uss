@@ -19,14 +19,12 @@ Label {
     border-color: rgba(255, 255, 255, 0.2);
 }
 
-#MonsterKillCounter {
+#KillCounter, #AllGameTimer {
     font-size: 24px;
     -unity-font-style: bold;
     color: var(--color-white);
-    unity-text-align: left;
     width: 100%;
     height: auto;
-    background: rgba(0, 0, 0, 0);
     padding: 6px 6px 6px 6px;
 }
 
@@ -34,9 +32,7 @@ Label {
     font-size: 24px;
     -unity-font-style: bold;
     color: rgb(120, 255, 120);
-    unity-text-align: left;
     width: 100%;
     height: auto;
-    background: rgba(0, 0, 0, 0);
     padding: 6px 6px 6px 6px;
 }

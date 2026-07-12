@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     public event Action<int> OnKillsCountChanged;
+    public event Action<float> OnGameTimeWasChanged;
     private float _playTime;
     public int _gameKills = 0;
 
@@ -39,5 +40,6 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         _playTime += Time.deltaTime;
+        OnGameTimeWasChanged?.Invoke(_playTime);
     }
 }

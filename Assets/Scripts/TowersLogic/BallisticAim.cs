@@ -1,9 +1,11 @@
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class BallisticAim : MonoBehaviour, IAim
 {
     [SerializeField] private Transform childTransform;
+    [SerializeField] public Transform _shootStartPoint;
     [Header("Default Aim Line")]
     [SerializeField] private Vector3 defaultRotationEuler = new Vector3(0, 0, 0);
     public bool IsBodyAimed { get; private set; }
@@ -26,7 +28,6 @@ public class BallisticAim : MonoBehaviour, IAim
             if (aimDirection != Vector3.zero)
             {
                 Quaternion targetRotation = Quaternion.LookRotation(aimDirection);
-                //transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * currentTower.rotationSpeed);
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, currentTower.rotationSpeed * Time.deltaTime);
                 IsBodyAimed = Quaternion.Angle(transform.rotation, targetRotation) < 2f;
                 Debug.Log($"IsBodyAimed because {Quaternion.Angle(transform.rotation, targetRotation)} < then 2");
@@ -48,7 +49,7 @@ public class BallisticAim : MonoBehaviour, IAim
             float v4 = v2 * v2;
             float rootTerm = v4 - _gravity * (_gravity * targetX * targetX + 2 * targetY * v2);
 
-            if (rootTerm >= -25f)
+            if (rootTerm >= -40f)
             {
                 float numerator = v2 - Mathf.Sqrt(rootTerm);
                 float denominator = _gravity * targetX;
@@ -62,9 +63,9 @@ public class BallisticAim : MonoBehaviour, IAim
                         angleRad = Mathf.PI + angleRad;
                     }
                     float angleDeg = angleRad * (180f / (float)Math.PI);
-                    if (angleDeg > -20f && angleDeg <= 60f)
+                    if (angleDeg > -40f && angleDeg <= 90f)
                     {
-                        targetBarrelAngle = Mathf.Clamp(angleDeg, -20f, 60f);
+                        targetBarrelAngle = Mathf.Clamp(angleDeg, -40f, 90f);
                     }
 
                 }
@@ -73,7 +74,6 @@ public class BallisticAim : MonoBehaviour, IAim
             if (!float.IsNaN(targetBarrelAngle))
             {
                 float currentAngle = -childTransform.localEulerAngles.x;
-                //float smoothedAngle = Mathf.LerpAngle(currentAngle, targetBarrelAngle, Time.deltaTime * currentTower.rotationSpeed * 1.8f);
                 float smoothedAngle = Mathf.MoveTowardsAngle(currentAngle, targetBarrelAngle, currentTower.barrelRotationSpeed * Time.deltaTime);
                 childTransform.localEulerAngles = new Vector3(-smoothedAngle, 0, 0);
                 IsBarrelAimed = Mathf.Abs(Mathf.DeltaAngle(smoothedAngle, targetBarrelAngle)) < 3f;
@@ -125,26 +125,32 @@ public class BallisticAim : MonoBehaviour, IAim
 
     public Vector3 GetPredictedPosition(GameObject target, Vector3 towerPosition, float projectileSpeed)
     {
-        Rigidbody targetRB = target.GetComponent<Rigidbody>();
-        Vector3 targetVelocity = targetRB != null ? targetRB.linearVelocity : Vector3.zero;
+        Monster monster = target.GetComponent<Monster>();
+
+        if (monster == null)
+        {
+            return target.transform.position;
+        }
+        Vector3 moveDirection = monster.MoveDirection;
+        Vector3 targetVelocity = moveDirection * monster.speed;
         Vector3 currentPosition = target.transform.position;
 
-        float time = Vector3.Distance(towerPosition, currentPosition) / projectileSpeed;
-        Vector3 predictedPosition = currentPosition;
+        Vector3 aimPoint = currentPosition;
+        aimPoint.y += 1f;
 
-        for (int i = 0; i < 4; i++)
+        float time = Vector3.Distance(_shootStartPoint.position, currentPosition) / projectileSpeed;
+        Vector3 predictedPos = currentPosition + targetVelocity * time;
+        for (int i = 0; i < 6; i++)
         {
-            predictedPosition = currentPosition + targetVelocity * time;
+            predictedPos = currentPosition + targetVelocity * time;
+            predictedPos.y += 2f;
 
-            float newTime = CalculateFlightTime(towerPosition, predictedPosition, projectileSpeed);
+            float newTime = CalculateFlightTime(_shootStartPoint.position, predictedPos, projectileSpeed);
             if (newTime < 0)
-            {
-                break;
-            }
+                return predictedPos;
 
             time = newTime;
         }
-
-        return predictedPosition;
+        return predictedPos;
     }
 }
