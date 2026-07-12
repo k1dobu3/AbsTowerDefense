@@ -42,9 +42,10 @@ public class BallisticAim : MonoBehaviour, IAim
             float v4 = v2 * v2;
             float rootTerm = v4 - _gravity * (_gravity * targetX * targetX + 2 * targetY * v2);
 
-            if (rootTerm < 0)
+            if (rootTerm < -25)
             {
                 resultBarrelAngle = float.NaN;
+                Debug.Log(resultBarrelAngle);
             }
 
             float numerator = v2 - (float)Math.Sqrt(rootTerm);
@@ -63,15 +64,15 @@ public class BallisticAim : MonoBehaviour, IAim
                 angleRad = (float)Math.PI + angleRad;
             }
 
-            if (angleDeg < 0 || angleDeg > 90f)
+            if (angleDeg < -30f || angleDeg > 90f)
             {
                 resultBarrelAngle = float.NaN;
             }
 
             resultBarrelAngle = angleRad * (180f / (float)Math.PI);
-            Debug.Log(resultBarrelAngle);
+            //Debug.Log(resultBarrelAngle);
 
-            if (resultBarrelAngle >= 0f)
+            if (resultBarrelAngle >= -30f)
             {
                 childTransform.localEulerAngles = new Vector3(-resultBarrelAngle, 0, 0);
             }
@@ -84,12 +85,11 @@ public class BallisticAim : MonoBehaviour, IAim
         {
             Quaternion defaultRot = Quaternion.Euler(defaultRotationEuler);
             transform.rotation = Quaternion.RotateTowards(transform.rotation, defaultRot, Time.deltaTime * currentTower.rotationSpeed);
-            //transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(defaultRotationEuler), Time.deltaTime * gunRotationSpeed);
         }
         if (true)
         {
             Quaternion defaultRot = Quaternion.Euler(0,0,0);
-            childTransform.localRotation = Quaternion.Slerp(childTransform.localRotation, defaultRot, currentTower.barrelRotationSpeed * Time.deltaTime);
+            childTransform.localRotation = Quaternion.RotateTowards(childTransform.localRotation, defaultRot, Time.deltaTime * currentTower.barrelRotationSpeed);
         }
     }
 }

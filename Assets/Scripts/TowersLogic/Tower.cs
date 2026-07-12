@@ -43,6 +43,7 @@ public class Towers : MonoBehaviour
         if (!_target)
         {
             _timeToTarget = _targetFinder.CalcTimeToTarget(_projectileSpeed);
+            _targetAim.AimReset(_currentTower.towerGunHeadMoveable, defaultRotationEuler, _currentTower);
         }
         if (_target)
         {
@@ -51,10 +52,6 @@ public class Towers : MonoBehaviour
                 _targetAim.AimTarget(_currentTower.towerGunHeadMoveable, _target, _projectileSpeed, _currentTower);
                 _shooter.TryShoot(_currentTower.fireSpeedCD, _target);
             }
-        }
-        else
-        {
-            _targetAim.AimReset(_currentTower.towerGunHeadMoveable, defaultRotationEuler, _currentTower);
         }
     }
 
