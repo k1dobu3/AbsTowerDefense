@@ -20,9 +20,15 @@ public class BallisticShoot : MonoBehaviour, IShooteable
 
     public void TryShoot(float fireSpeed, GameObject target)
     {
-        if (_canShoot)
+        if (_canShoot && RaycastCheck(target))
         {
-            Vector3 modifiedPosition = transform.position
+            StartCoroutine(MakeShoot(fireSpeed, target));
+        }
+    }
+
+    private bool RaycastCheck(GameObject target)
+    {
+        Vector3 modifiedPosition = transform.position
            + transform.forward * 0
            + transform.up * 1
            + transform.right * 2;
@@ -37,14 +43,15 @@ public class BallisticShoot : MonoBehaviour, IShooteable
                 //Debug.LogError("EX");  //for debug pause
                 if (target != null && hit.collider.CompareTag("Monster"))
                 {
-                    StartCoroutine(MakeShoot(fireSpeed, target));
+                    return true;
                 }
             }
             else
             {
                 Debug.DrawRay(ray.origin, ray.direction * 100f, Color.green, 5.0f);
+                return false;
             }
-        }
+            return false;
     }
 
     private IEnumerator MakeShoot(float fireSpeed, GameObject target)
