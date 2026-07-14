@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -9,12 +10,12 @@ public class BallisticAim : MonoBehaviour, IAim
 
     private float _gravity;
 
-    [SerializeField] 
+    [SerializeField]
     private Transform childTransform;
-    [SerializeField] 
+    [SerializeField]
     private Transform _shootStartPoint;
     [Header("Default Aim Line")]
-    [SerializeField] 
+    [SerializeField]
     private Vector3 defaultRotationEuler = new Vector3(0, 0, 0);
 
     public bool IsAimed => IsBodyAimed && IsBarrelAimed;
@@ -35,55 +36,33 @@ public class BallisticAim : MonoBehaviour, IAim
             }
         }
 
+        float targetBarrelAngle = float.NaN;
         if (true) //incile gun barrel
         {
-            float targetBarrelAngle = float.NaN;
             //precalc
             float dx = predictedPosition.x - transform.position.x;
             float dz = predictedPosition.z - transform.position.z;
             float targetY = predictedPosition.y - transform.position.y;
-
             float targetX = (float)Mathf.Sqrt(dx * dx + dz * dz);
-
-
-            float v2 = currentTower.startMuzzleSpeed * currentTower.startMuzzleSpeed;
-            float v4 = v2 * v2;
-            float rootTerm = v4 - _gravity * (_gravity * targetX * targetX + 2 * targetY * v2);
-
-            if (rootTerm >= -40f)
+            
+            float angleDeg = calcShootAngle(targetX, targetY, currentTower.startMuzzleSpeed);
+            if (!float.IsNaN(angleDeg) && angleDeg > -40f && angleDeg <= 90f)
             {
-                float numerator = v2 - Mathf.Sqrt(rootTerm);
-                float denominator = _gravity * targetX;
-
-                if (Mathf.Abs(denominator) > 0.0001f)
-                {
-                    float angleRad = Mathf.Atan(numerator / denominator);
-
-                    if (angleRad < 0)
-                    {
-                        angleRad = Mathf.PI + angleRad;
-                    }
-                    float angleDeg = angleRad * (180f / (float)Math.PI);
-                    if (angleDeg > -40f && angleDeg <= 90f)
-                    {
-                        targetBarrelAngle = Mathf.Clamp(angleDeg, -40f, 90f);
-                    }
-
-                }
+                targetBarrelAngle = Mathf.Clamp(angleDeg, -40f, 90f);
             }
+        }
 
-            if (!float.IsNaN(targetBarrelAngle))
-            {
-                float currentAngle = -childTransform.localEulerAngles.x;
-                float smoothedAngle = Mathf.MoveTowardsAngle(currentAngle, targetBarrelAngle, currentTower.barrelRotationSpeed * Time.deltaTime);
-                childTransform.localEulerAngles = new Vector3(-smoothedAngle, 0, 0);
-                IsBarrelAimed = Mathf.Abs(Mathf.DeltaAngle(smoothedAngle, targetBarrelAngle)) < 3f;
-                Debug.Log($"IsBarrelAimed because {Mathf.Abs(Mathf.DeltaAngle(smoothedAngle, targetBarrelAngle))} < then 1");
-            }
-            else
-            {
-                AimReset(currentTower);
-            }
+        if (!float.IsNaN(targetBarrelAngle))
+        {
+            float currentAngle = -childTransform.localEulerAngles.x;
+            float smoothedAngle = Mathf.MoveTowardsAngle(currentAngle, targetBarrelAngle, currentTower.barrelRotationSpeed * Time.deltaTime);
+            childTransform.localEulerAngles = new Vector3(-smoothedAngle, 0, 0);
+            IsBarrelAimed = Mathf.Abs(Mathf.DeltaAngle(smoothedAngle, targetBarrelAngle)) < 3f;
+            Debug.Log($"IsBarrelAimed because {Mathf.Abs(Mathf.DeltaAngle(smoothedAngle, targetBarrelAngle))} < then 1");
+        }
+        else
+        {
+            AimReset(currentTower);
         }
     }
 
@@ -105,21 +84,28 @@ public class BallisticAim : MonoBehaviour, IAim
 
     public float CalculateFlightTime(Vector3 start, Vector3 target, float speed)
     {
-        Vector3 direction = target - start;
-        float horizontalDistance = new Vector3(direction.x, 0, direction.z).magnitude;
+        // Vector3 direction = target - start;
+        // float horizontalDistance = new Vector3(direction.x, 0, direction.z).magnitude;
+        // float height = direction.y;
 
-        float height = direction.y;
-        float v2 = speed * speed;
-        float v4 = v2 * v2;
-        float root = v4 - _gravity * (_gravity * horizontalDistance * horizontalDistance + 2 * height * v2);
-        if (root < 0)
-        {
-            return -1;
-        }
-        float angle = Mathf.Atan((v2 - Mathf.Sqrt(root)) / (_gravity * horizontalDistance));
-        float time = horizontalDistance / (speed * Mathf.Cos(angle));
+        // float angleDeg = calcShootAngle(horizontalDistance, height, speed);
+        // if (float.IsNaN(angleDeg))
+        // {
+        //     return -1f;
+        // }
 
-        return time;
+        // float angleRad = angleDeg * Mathf.Deg2Rad;
+        // float time = Vector3.Distance(_shootStartPoint.position, target) / speed;
+
+        //return time;
+
+        float directDist = Vector3.Distance(start, target);
+        float directTime = directDist / speed;
+
+        float heightDiff = target.y - start.y;
+        float extraTimeFactor = 1.0f + Mathf.Abs(heightDiff) * 0.015f;
+
+        return directTime * extraTimeFactor;
     }
 
     public Vector3 GetPredictedPosition(GameObject target, Vector3 towerPosition, float projectileSpeed)
@@ -133,21 +119,30 @@ public class BallisticAim : MonoBehaviour, IAim
         Vector3 targetVelocity = moveDirection * monster.speed;
         Vector3 currentPosition = target.transform.position;
 
-        Vector3 aimPoint = currentPosition;
-        aimPoint.y += 1f;
+        Vector3 aimOffset = new Vector3(0, 1f, 0);
+        Vector3 aimStart = currentPosition + aimOffset;
 
         float time = Vector3.Distance(_shootStartPoint.position, currentPosition) / projectileSpeed;
-        Vector3 predictedPos = currentPosition + targetVelocity * time;
-        for (int i = 0; i < 6; i++)
+        Vector3 predictedPos = aimStart + targetVelocity * time;
+        for (int i = 0; i < 12; i++)
         {
-            predictedPos = currentPosition + targetVelocity * time;
-            predictedPos.y += 2f;
+            
+            // predictedPos.y += 2f;
 
             float newTime = CalculateFlightTime(_shootStartPoint.position, predictedPos, projectileSpeed);
-            if (newTime < 0)
-                return predictedPos;
-
             time = newTime;
+            if (newTime < 0)
+            {
+                break;
+            }
+            Vector3 newPredictedPos = currentPosition + targetVelocity * time + aimOffset;
+            if (Vector3.Distance(newPredictedPos, predictedPos) < 0.01f)
+            {
+                break;
+            }
+
+            predictedPos = newPredictedPos;
+            
         }
         return predictedPos;
     }
@@ -155,5 +150,35 @@ public class BallisticAim : MonoBehaviour, IAim
     private void Start()
     {
         _gravity = SceneRule.Instance.sceneGravity;
+    }
+
+    private float calcShootAngle(float horizontalDistance, float heightDifference, float speed)
+    {
+        if (Mathf.Abs(horizontalDistance) < 0.0001f)
+        {
+            return float.NaN;
+        }
+        float v2 = speed * speed;
+        float v4 = v2 * v2;
+        float forceReserve = v4 - _gravity * (_gravity * horizontalDistance * horizontalDistance + 2 * heightDifference * v2);
+        if (forceReserve < -10f)
+        {
+            return float.NaN;
+        }
+
+        float numerator = v2 - Mathf.Sqrt(forceReserve);
+        float denominator = _gravity * horizontalDistance;
+        if (Mathf.Abs(denominator) < 0.0001f)
+        {
+            return float.NaN;
+        }
+        float angleRad = Mathf.Atan(numerator / denominator);
+        if (angleRad < 0)
+        {
+            angleRad = Mathf.PI + angleRad;
+        }
+        float angleDeg = angleRad * Mathf.Rad2Deg;
+
+        return angleDeg;
     }
 }
