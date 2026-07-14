@@ -1,18 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Unity.VisualScripting;
+using System;
 
 public class CannonProjectile : MonoBehaviour, IPoolable
 {
 	private GameObjectPool<CannonProjectile> _pool;
 	private AmmoSO _currentAmmoData;
 	private float _spawnTime;
-	public Rigidbody rb;
+	private Rigidbody _rb;
 
-	private void Awake()
-	{
-    	rb = GetComponent<Rigidbody>();
-	}
 	public void Initialize(AmmoSO ammoData)
 	{
 		_currentAmmoData = ammoData;
@@ -23,7 +20,31 @@ public class CannonProjectile : MonoBehaviour, IPoolable
 		_pool = pool;
 	}
 
-    public void FixedUpdate()
+	public void OnSpawn()
+	{
+		_rb.linearVelocity = Vector3.zero;
+    	_rb.angularVelocity = Vector3.zero;
+		_spawnTime = Time.time;
+	}
+
+	public void OnDespawn()
+	{
+		_rb.linearVelocity = Vector3.zero;
+		_rb.angularVelocity = Vector3.zero;
+		_pool.ReturnObject(this);
+	}
+
+	public void SetVelocity(Vector3 Velocity)
+	{
+		_rb.linearVelocity = Velocity;
+	}
+
+	private void Awake()
+	{
+    	_rb = GetComponent<Rigidbody>();
+	}
+
+    private void FixedUpdate()
     {
         if (Time.time - _spawnTime > 5f)
 		{
@@ -31,25 +52,13 @@ public class CannonProjectile : MonoBehaviour, IPoolable
 		}
     }
 
-    public void OnSpawn()
+	private void OnTriggerEnter(Collider other) 
 	{
-		rb.linearVelocity = Vector3.zero;
-    	rb.angularVelocity = Vector3.zero;
-		_spawnTime = Time.time;
-	}
-
-	public void OnDespawn()
-	{
-		rb.linearVelocity = Vector3.zero;
-		rb.angularVelocity = Vector3.zero;
-		_pool.ReturnObject(this);
-	}
-
-	void OnTriggerEnter(Collider other) {
-		var monster = other.gameObject.GetComponent<Monster> ();
+		var monster = other.gameObject.GetComponent<IDamageable>();
 		if (monster == null)
-			return;
-
+		{
+			return;	
+		}
 		monster.TakeDamage (_currentAmmoData.ammoDamage, false);
 		OnDespawn();
 	}

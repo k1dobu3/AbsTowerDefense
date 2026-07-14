@@ -9,7 +9,6 @@ public class SearchTarget : MonoBehaviour, ITargetable
         Collider[] colliders = Physics.OverlapSphere(searcherPos, fireRange);
         GameObject nearestTarget = null;
 
-
         foreach (var col in colliders)
         {
             if (col.CompareTag("Monster"))

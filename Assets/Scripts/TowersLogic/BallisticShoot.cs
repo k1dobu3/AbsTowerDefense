@@ -6,21 +6,28 @@ using UnityEngine.UI;
 
 public class BallisticShoot : MonoBehaviour, IShooteable
 {
-    [SerializeField] public AmmoSO _currentAmmo;
-    [SerializeField] public Transform _shootStartPoint;
-    [SerializeField] public GameObject _sparkles;
     private GameObjectPool<CannonProjectile> _pool;
     private bool _canShoot = true;
 
-    public float CurrentProjectileSpeed
+    public float сurrentProjectileSpeed { get { return _currentAmmo.ammoSpeed; } }
+
+    [SerializeField]
+    private AmmoSO _currentAmmo;
+    [SerializeField]
+    private Transform _shootStartPoint;
+    [SerializeField]
+    private GameObject _sparkles;
+
+    public void TryShoot(float fireSpeed, GameObject target, float startMuzzleSpeed, Vector3 predictedPos)
     {
-        get
+        if (_canShoot)
         {
-            return _currentAmmo.ammoSpeed;
+            StartCoroutine(MakeShoot(fireSpeed, target, startMuzzleSpeed, predictedPos));
+            StartCoroutine(DisableSparkles(fireSpeed * 0.2f));
         }
     }
 
-    public void Start()
+    private void Awake()
     {
         if (_pool == null)
         {
@@ -28,12 +35,11 @@ public class BallisticShoot : MonoBehaviour, IShooteable
         }
     }
 
-    public void TryShoot(float fireSpeed, GameObject target, float startMuzzleSpeed, Vector3 predictedPos)
+    private void OnDestroy()
     {
-        if (_canShoot )
+        if (_pool != null)
         {
-            StartCoroutine(MakeShoot(fireSpeed, target, startMuzzleSpeed, predictedPos));
-            StartCoroutine(DisableSparkles(fireSpeed*0.2f));
+            _pool.ClearPool();
         }
     }
 
@@ -54,16 +60,15 @@ public class BallisticShoot : MonoBehaviour, IShooteable
         _canShoot = false;
         // Debug.Log("Пиу")
         CannonProjectile projectile = SpawnProjectile();
-        Debug.LogError("1");
+        //Debug.LogError("1");
         if (projectile == null)
         {
             Debug.LogError("Выстрел отменен: projectile == null");
             _canShoot = true;
             yield break;
         }
-        
-        Vector3 shootDirection;
 
+        Vector3 shootDirection;
         if (predictedPos.HasValue)
         {
             shootDirection = (predictedPos.Value - _shootStartPoint.position).normalized;
@@ -73,11 +78,11 @@ public class BallisticShoot : MonoBehaviour, IShooteable
             shootDirection = _shootStartPoint.forward;
         }
 
-        Debug.Log($"Projectile = {projectile}");
-        Debug.Log($"ShootPoint = {_shootStartPoint}");
+        // Debug.Log($"Projectile = {projectile}");
+        // Debug.Log($"ShootPoint = {_shootStartPoint}");
         projectile.transform.SetPositionAndRotation(_shootStartPoint.position, Quaternion.LookRotation(shootDirection));
-        projectile.rb.linearVelocity = shootDirection * startMuzzleSpeed;        
-        
+        projectile.SetVelocity(shootDirection * startMuzzleSpeed);
+
         yield return new WaitForSeconds(fireSpeed);
         _canShoot = true;
     }

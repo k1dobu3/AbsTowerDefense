@@ -3,26 +3,44 @@ using UnityEngine;
 
 public class LineShoot : MonoBehaviour, IShooteable
 {
-    [SerializeField] public AmmoSO _currentAmmo;
-    [SerializeField] public GameObject _halo;
     private bool _canShoot = true;
     private GameObjectPool<GuidedProjectile> _pool;
 
-    public float CurrentProjectileSpeed
+    public float сurrentProjectileSpeed { get {return _currentAmmo.ammoSpeed;} }
+
+    [SerializeField]
+    private AmmoSO _currentAmmo;
+    [SerializeField]
+    private GameObject _halo;
+
+    public void TryShoot(float fireSpeed, GameObject target, float startMuzzleSpeed, Vector3 predictedPos)
     {
-        get
+        if (_canShoot && target != null)
         {
-            return _currentAmmo.ammoSpeed;
+            StartCoroutine(MakeShoot(fireSpeed, target));
+            StartCoroutine(DisableHalo(fireSpeed*0.8f));
         }
     }
 
-    public void Start()
+    private void Awake()
     {
         if (_pool == null)
         {
             _pool = new GameObjectPool<GuidedProjectile>(_currentAmmo.ammoProjectilePrefab, 5, "CrystalTower");
         }
+    }
+
+    private void Start()
+    {
         SpawnProjectile();
+    }
+
+    private void OnDestroy()
+    {
+        if (_pool != null)
+        {
+            _pool.ClearPool();
+        }
     }
 
     private void SpawnProjectile(GameObject target = null)
@@ -35,16 +53,6 @@ public class LineShoot : MonoBehaviour, IShooteable
             crystal.SetPool(_pool);
         }
     }
-
-    public void TryShoot(float fireSpeed, GameObject target, float startMuzzleSpeed, Vector3 predictedPos)
-    {
-        if (_canShoot && target != null)
-        {
-            StartCoroutine(MakeShoot(fireSpeed, target));
-            StartCoroutine(DisableHalo(fireSpeed*0.8f));
-        }
-    }
-
 
     private IEnumerator MakeShoot(float fireSpeed, GameObject target)
     {
@@ -63,13 +71,5 @@ public class LineShoot : MonoBehaviour, IShooteable
         _halo.SetActive(false);
         yield return new WaitForSeconds(haloDisableTime);
         _halo.SetActive(true);
-    }
-
-    private void OnDestroy()
-    {
-        if (_pool != null)
-        {
-            _pool.ClearPool();
-        }
     }
 }

@@ -4,19 +4,20 @@ using UnityEngine.EventSystems;
 
 public class BallisticAim : MonoBehaviour, IAim
 {
-    [SerializeField] private Transform childTransform;
-    [SerializeField] public Transform _shootStartPoint;
-    [Header("Default Aim Line")]
-    [SerializeField] private Vector3 defaultRotationEuler = new Vector3(0, 0, 0);
     public bool IsBodyAimed { get; private set; }
     public bool IsBarrelAimed { get; private set; }
-    public bool IsAimed => IsBodyAimed && IsBarrelAimed;
+
     private float _gravity;
 
-    private void Start()
-    {
-        _gravity = SceneRule.Instance.SceneGravity;
-    }
+    [SerializeField] 
+    private Transform childTransform;
+    [SerializeField] 
+    private Transform _shootStartPoint;
+    [Header("Default Aim Line")]
+    [SerializeField] 
+    private Vector3 defaultRotationEuler = new Vector3(0, 0, 0);
+
+    public bool IsAimed => IsBodyAimed && IsBarrelAimed;
 
     public void AimTarget(GameObject target, Vector3 predictedPosition, TowerDataSO currentTower)
     {
@@ -111,12 +112,10 @@ public class BallisticAim : MonoBehaviour, IAim
         float v2 = speed * speed;
         float v4 = v2 * v2;
         float root = v4 - _gravity * (_gravity * horizontalDistance * horizontalDistance + 2 * height * v2);
-
         if (root < 0)
         {
             return -1;
         }
-
         float angle = Mathf.Atan((v2 - Mathf.Sqrt(root)) / (_gravity * horizontalDistance));
         float time = horizontalDistance / (speed * Mathf.Cos(angle));
 
@@ -126,7 +125,6 @@ public class BallisticAim : MonoBehaviour, IAim
     public Vector3 GetPredictedPosition(GameObject target, Vector3 towerPosition, float projectileSpeed)
     {
         Monster monster = target.GetComponent<Monster>();
-
         if (monster == null)
         {
             return target.transform.position;
@@ -152,5 +150,10 @@ public class BallisticAim : MonoBehaviour, IAim
             time = newTime;
         }
         return predictedPos;
+    }
+
+    private void Start()
+    {
+        _gravity = SceneRule.Instance.sceneGravity;
     }
 }

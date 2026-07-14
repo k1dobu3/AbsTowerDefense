@@ -3,40 +3,21 @@ using Unity.VisualScripting;
 
 public class Spawner : MonoBehaviour
 {
-	[SerializeField] public float _interval = 3;
-	[SerializeField] private int _maxPoolSize = 10;
-	[SerializeField] private GameObject _moveTarget;
-	[SerializeField] private MonsterDataSO _monsterData;
-	[SerializeField] private GameUI gameUI;
-
-    private PlayerStatsModel _model;
+	private PlayerStatsModel _model;
 	private float _lastSpawn = -1;
 	private float _timeLeft;
 	private GameObjectPool<Monster> _monsterPool;
 
-
-	public void Awake()
-	{
-		_monsterPool = new GameObjectPool<Monster>(_monsterData.monsterPrefab, _maxPoolSize, "Monster Pool");
-	}
-
-	public void Start()
-	{
-		_lastSpawn = -_interval;
-		_model = gameUI.GetPlayerStatsModel();
-	}
-
-	void Update()
-	{
-		if (Time.time > _lastSpawn + _interval)
-		{
-			SpawnMonster();
-			_lastSpawn = Time.time;
-			
-		}
-		_timeLeft = (_lastSpawn + _interval) - Time.time;
-		_model.UpdateTimer(_timeLeft);
-	}
+	[SerializeField]
+	public float _interval = 3;
+	[SerializeField]
+	private int _maxPoolSize = 10;
+	[SerializeField]
+	private GameObject _moveTarget;
+	[SerializeField]
+	private MonsterDataSO _monsterData;
+	[SerializeField]
+	private GameUI gameUI;
 
 	public void SpawnMonster()
 	{
@@ -59,6 +40,29 @@ public class Spawner : MonoBehaviour
 	public void ReturnToPool(Monster monster)
 	{
 		_monsterPool.ReturnObject(monster);
+	}
+
+	private void Awake()
+	{
+		_monsterPool = new GameObjectPool<Monster>(_monsterData.monsterPrefab, _maxPoolSize, "Monster Pool");
+	}
+
+	private void Start()
+	{
+		_lastSpawn = -_interval;
+		_model = gameUI.GetPlayerStatsModel();
+	}
+
+	private void Update()
+	{
+		if (Time.time > _lastSpawn + _interval)
+		{
+			SpawnMonster();
+			_lastSpawn = Time.time;
+			
+		}
+		_timeLeft = (_lastSpawn + _interval) - Time.time;
+		_model.UpdateTimer(_timeLeft);
 	}
 
 	private void OnDestroy()

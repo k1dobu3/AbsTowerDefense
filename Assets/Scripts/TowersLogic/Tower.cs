@@ -4,7 +4,8 @@ using UnityEngine;
 public class Towers : MonoBehaviour
 {
     [Header("Data of tower type")]
-    [SerializeField] private TowerDataSO _data;
+    [SerializeField] 
+    private TowerDataSO _data;
 
     private TowerDataSO _currentTower;
     private GameObject _target;
@@ -36,10 +37,9 @@ public class Towers : MonoBehaviour
         _target = _targetFinder.FindTarget(transform.position, _currentTower.fireRange);
         if (_target)
         {
-            ;
             Vector3 predictedPostion = _targetAim.GetPredictedPosition(_target, transform.position, _currentTower.startMuzzleSpeed);
             _targetAim.AimTarget(_target, predictedPostion, _currentTower);
-            Debug.Log(_targetAim.IsAimed);
+            // Debug.Log(_targetAim.IsAimed);
             if (_targetAim.IsAimed)
             {
                 Vector3 predictedPos = _targetAim.GetPredictedPosition(_target, transform.position, _currentTower.startMuzzleSpeed);
@@ -52,6 +52,4 @@ public class Towers : MonoBehaviour
             _targetAim.AimReset(_currentTower);
         }
     }
-
-    public Transform Transform => transform;
 }
