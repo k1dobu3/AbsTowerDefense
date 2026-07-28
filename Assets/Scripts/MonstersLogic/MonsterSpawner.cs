@@ -1,7 +1,7 @@
 using UnityEngine;
 using Unity.VisualScripting;
 
-public class Spawner : MonoBehaviour
+public class MonsterSpawner : MonoBehaviour
 {
 	private PlayerStatsModel _model;
 	private float _lastSpawn = -1;
@@ -62,7 +62,7 @@ public class Spawner : MonoBehaviour
 			
 		}
 		_timeLeft = (_lastSpawn + _interval) - Time.time;
-		_model.UpdateTimer(_timeLeft);
+		_model.UpdateMonsterSpawnTimer(_timeLeft);
 	}
 
 	private void OnDestroy()

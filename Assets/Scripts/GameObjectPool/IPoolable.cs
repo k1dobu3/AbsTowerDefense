@@ -1,5 +1,5 @@
 public interface IPoolable
 {
-    void OnSpawn();
-    void OnDespawn();
+	void OnSpawn();
+	void OnDespawn();
 }

@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using Unity.VisualScripting;
 using System;
 
 public class Monster : MonoBehaviour, IPoolable, IDamageable
@@ -82,11 +80,6 @@ public class Monster : MonoBehaviour, IPoolable, IDamageable
 		{
 			PawnMove();
 		}
-	}
-
-	private void OnDestroy()
-	{
-
 	}
 
 	private void PawnMove()

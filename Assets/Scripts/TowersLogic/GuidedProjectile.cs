@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class GuidedProjectile : MonoBehaviour, IPoolable
 {
@@ -27,11 +26,11 @@ public class GuidedProjectile : MonoBehaviour, IPoolable
 		}
 	}
 
-    public void OnDespawn()
-    {
+	public void OnDespawn()
+	{
 		_target = null;
 		_pool.ReturnObject(this);
-    }
+	}
 
 	private void Update () {
 		if (_target == null || !_target.gameObject.activeInHierarchy) {

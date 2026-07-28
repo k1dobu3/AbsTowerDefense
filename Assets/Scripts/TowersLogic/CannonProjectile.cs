@@ -1,7 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using Unity.VisualScripting;
-using System;
 
 public class CannonProjectile : MonoBehaviour, IPoolable
 {
@@ -23,7 +20,7 @@ public class CannonProjectile : MonoBehaviour, IPoolable
 	public void OnSpawn()
 	{
 		_rb.linearVelocity = Vector3.zero;
-    	_rb.angularVelocity = Vector3.zero;
+		_rb.angularVelocity = Vector3.zero;
 		_spawnTime = Time.time;
 	}
 
@@ -41,16 +38,16 @@ public class CannonProjectile : MonoBehaviour, IPoolable
 
 	private void Awake()
 	{
-    	_rb = GetComponent<Rigidbody>();
+		_rb = GetComponent<Rigidbody>();
 	}
 
-    private void FixedUpdate()
-    {
-        if (Time.time - _spawnTime > 5f)
+	private void FixedUpdate()
+	{
+		if (Time.time - _spawnTime > 5f)
 		{
 			OnDespawn();
 		}
-    }
+	}
 
 	private void OnTriggerEnter(Collider other) 
 	{
