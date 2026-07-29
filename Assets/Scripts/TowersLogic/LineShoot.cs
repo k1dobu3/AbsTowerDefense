@@ -1,5 +1,8 @@
 using System.Collections;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
+using System.Threading;
+using Cysharp.Threading.Tasks.CompilerServices;
 
 public class LineShoot : MonoBehaviour, IShootable
 {
@@ -17,8 +20,8 @@ public class LineShoot : MonoBehaviour, IShootable
 	{
 		if (_canShoot && target != null)
 		{
-			StartCoroutine(MakeShoot(fireSpeed, target));
-			StartCoroutine(DisableHalo(fireSpeed*0.8f));
+			MakeShoot(fireSpeed, target, this.GetCancellationTokenOnDestroy()).Forget();
+			DisableHalo(fireSpeed * 0.2f, this.GetCancellationTokenOnDestroy()).Forget();
 			return true;
 		}
 		return false;
@@ -56,22 +59,22 @@ public class LineShoot : MonoBehaviour, IShootable
 		}
 	}
 
-	private IEnumerator MakeShoot(float fireSpeed, GameObject target)
+	private async UniTaskVoid MakeShoot(float firespeed, GameObject target, CancellationToken cancellationToken)
 	{
 		_canShoot = false;
 		SpawnProjectile(target);
-		yield return new WaitForSeconds(fireSpeed);
+		await UniTask.Delay((int)(firespeed * 1000), cancellationToken: cancellationToken);
 		_canShoot = true;
 	}
 
-	private IEnumerator DisableHalo(float haloDisableTime)
+	private async UniTaskVoid DisableHalo(float sparklesDisableTime, CancellationToken cancellationToken)
 	{
 		if (_halo == null)
 		{
-			yield break;
+			return;
 		}
 		_halo.SetActive(false);
-		yield return new WaitForSeconds(haloDisableTime);
-		_halo.SetActive(true);
+		await UniTask.Delay((int)(sparklesDisableTime * 1000), cancellationToken: cancellationToken);
+		_halo.SetActive(false);
 	}
 }

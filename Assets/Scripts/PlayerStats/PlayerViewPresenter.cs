@@ -13,7 +13,7 @@ public class PlayerViewPresenter : IDisposable
 		_model.OnMonsterSpawnTimerChanged += UpdateViewMonsterTimer;
 	}
 
-	public void Start()
+	public void Initialize()
 	{
 		if (AnalyticsKillsCounter.Instance != null)
 		{

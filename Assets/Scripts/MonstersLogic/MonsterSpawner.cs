@@ -30,10 +30,7 @@ public class MonsterSpawner : MonoBehaviour
 			monster.hp = _monsterData.maxHP;
 			monster.SetPool(_monsterPool);
 
-			if (monster.GetComponent<Rigidbody>() == null)
-			{
-				monster.AddComponent<Rigidbody>().useGravity = false;
-			}
+			monster.rb.useGravity = false;
 		}
 	}
 

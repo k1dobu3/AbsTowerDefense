@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class GuidedProjectile : MonoBehaviour, IPoolable
+public class GuidedProjectile : BaseProjectile
 {
 	private GameObject _target;
 	private AmmoSO _currentAmmoData;
@@ -10,6 +10,7 @@ public class GuidedProjectile : MonoBehaviour, IPoolable
 	public void Initialize(AmmoSO ammoData, GameObject target)
 	{
 		_currentAmmoData = ammoData;
+		damage = _currentAmmoData.ammoDamage;
 		_target = target;
 	}
 	
@@ -18,7 +19,7 @@ public class GuidedProjectile : MonoBehaviour, IPoolable
 		_pool = pool;
 	}
 
-	public void OnSpawn()
+	public override void OnSpawn()
 	{
 		if (_collider == null)
 		{
@@ -26,7 +27,7 @@ public class GuidedProjectile : MonoBehaviour, IPoolable
 		}
 	}
 
-	public void OnDespawn()
+	public override void OnDespawn()
 	{
 		_target = null;
 		_pool.ReturnObject(this);
@@ -43,17 +44,5 @@ public class GuidedProjectile : MonoBehaviour, IPoolable
 			translation = translation.normalized * _currentAmmoData.ammoSpeed;
 		}
 		transform.Translate (translation);
-	}
-
-	private void OnTriggerEnter(Collider other) 
-	{
-		_collider.enabled = false;
-		var monster = other.gameObject.GetComponent<IDamageable>();
-		if (monster == null)
-		{
-			return;	
-		}
-		monster.TakeDamage (_currentAmmoData.ammoDamage, false);
-		OnDespawn();
 	}
 }

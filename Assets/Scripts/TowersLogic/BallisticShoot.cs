@@ -1,5 +1,7 @@
 using System.Collections;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
+using System.Threading;
 
 public class BallisticShoot : MonoBehaviour, IShootable
 {
@@ -19,8 +21,8 @@ public class BallisticShoot : MonoBehaviour, IShootable
 	{
 		if (_canShoot)
 		{
-			StartCoroutine(MakeShoot(fireSpeed, target, startMuzzleSpeed, predictedPos));
-			StartCoroutine(DisableSparkles(fireSpeed * 0.2f));
+			MakeShoot(fireSpeed, target, startMuzzleSpeed, this.GetCancellationTokenOnDestroy(), predictedPos).Forget();
+			DisableSparkles(fireSpeed * 0.2f, this.GetCancellationTokenOnDestroy()).Forget();
 			return true;
 		}
 		return false;
@@ -54,7 +56,7 @@ public class BallisticShoot : MonoBehaviour, IShootable
 		return projectile;
 	}
 
-	private IEnumerator MakeShoot(float fireSpeed, GameObject target, float startMuzzleSpeed, Vector3? predictedPos = null)
+	private async UniTaskVoid MakeShoot(float firespeed, GameObject target, float startMuzzleSpeed, CancellationToken cancellationToken, Vector3? predictedPos = null)
 	{
 		_canShoot = false;
 		CannonProjectile projectile = SpawnProjectile();
@@ -62,9 +64,8 @@ public class BallisticShoot : MonoBehaviour, IShootable
 		{
 			Debug.LogError("Выстрел отменен: projectile == null");
 			_canShoot = true;
-			yield break;
+			return;
 		}
-
 		Vector3 shootDirection;
 		if (predictedPos.HasValue)
 		{
@@ -78,18 +79,18 @@ public class BallisticShoot : MonoBehaviour, IShootable
 		projectile.transform.SetPositionAndRotation(_shootStartPoint.position, Quaternion.LookRotation(shootDirection));
 		projectile.SetVelocity(shootDirection * startMuzzleSpeed);
 
-		yield return new WaitForSeconds(fireSpeed);
+		await UniTask.Delay((int)(firespeed * 1000), cancellationToken: cancellationToken);
 		_canShoot = true;
 	}
 
-	private IEnumerator DisableSparkles(float sparklesDisableTime)
+	private async UniTaskVoid DisableSparkles(float sparklesDisableTime, CancellationToken cancellationToken)
 	{
 		if (_sparkles == null)
 		{
-			yield break;
+			return;
 		}
 		_sparkles.SetActive(false);
-		yield return new WaitForSeconds(sparklesDisableTime);
+		await UniTask.Delay((int)(sparklesDisableTime * 1000), cancellationToken: cancellationToken);
 		_sparkles.SetActive(true);
 	}
 }

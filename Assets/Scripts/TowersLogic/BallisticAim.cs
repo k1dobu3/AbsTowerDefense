@@ -12,8 +12,6 @@ public class BallisticAim : MonoBehaviour, IAim
 	[SerializeField]
 	private Transform _shootStartPoint;
 	[Header("Default Aim Line")]
-	[SerializeField]
-	private Vector3 defaultRotationEuler = new Vector3(0, 0, 0);
 
 	public bool IsAimed => IsBodyAimed && IsBarrelAimed;
 
@@ -34,19 +32,17 @@ public class BallisticAim : MonoBehaviour, IAim
 		}
 
 		float targetBarrelAngle = 0f;
-		if (true)
+
+		float dx = predictedPosition.x - transform.position.x;
+		float dz = predictedPosition.z - transform.position.z;
+		float targetY = predictedPosition.y - transform.position.y;
+		float targetX = (float)Mathf.Sqrt(dx * dx + dz * dz);
+		
+		float angleDeg = CalcShootAngle(targetX, targetY, currentTower.startMuzzleSpeed);
+		if (!float.IsNaN(angleDeg) && angleDeg > -60f && angleDeg <= 85f)
 		{
-			float dx = predictedPosition.x - transform.position.x;
-			float dz = predictedPosition.z - transform.position.z;
-			float targetY = predictedPosition.y - transform.position.y;
-			float targetX = (float)Mathf.Sqrt(dx * dx + dz * dz);
-			
-			float angleDeg = CalcShootAngle(targetX, targetY, currentTower.startMuzzleSpeed);
-			if (!float.IsNaN(angleDeg) && angleDeg > -60f && angleDeg <= 85f)
-			{
-				targetBarrelAngle = Mathf.Clamp(angleDeg, -60f, 85f);
-				Debug.Log(targetBarrelAngle);
-			}
+			targetBarrelAngle = Mathf.Clamp(angleDeg, -60f, 85f);
+			Debug.Log(targetBarrelAngle);
 		}
 
 		if (!float.IsNaN(targetBarrelAngle))
@@ -69,19 +65,20 @@ public class BallisticAim : MonoBehaviour, IAim
 		IsBarrelAimed = false;
 		if (currentTower.towerGunHeadMoveable)
 		{
-			Quaternion defaultRot = Quaternion.Euler(defaultRotationEuler);
+			Quaternion defaultRot = Quaternion.Euler(Vector3.zero);
 			transform.rotation = Quaternion.RotateTowards(transform.rotation, defaultRot, Time.deltaTime * currentTower.rotationSpeed);
 		}
-		if (true)
-		{
-			Quaternion defaultBarrelRot = Quaternion.Euler(defaultRotationEuler);
-			childTransform.localRotation = Quaternion.RotateTowards(childTransform.localRotation, defaultBarrelRot, Time.deltaTime * currentTower.barrelRotationSpeed);
-		}
+		Quaternion defaultBarrelRot = Quaternion.Euler(Vector3.zero);
+		childTransform.localRotation = Quaternion.RotateTowards(childTransform.localRotation, defaultBarrelRot, Time.deltaTime * currentTower.barrelRotationSpeed);
 	}
 
 	public float CalculateFlightTime(Vector3 start, Vector3 target, float speed)
 	{
 		float directDist = Vector3.Distance(start, target);
+		if (speed <= 0f)
+		{
+			return -1f;
+		}
 		float directTime = directDist / speed;
 
 		float heightDiff = target.y - start.y;

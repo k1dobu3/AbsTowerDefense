@@ -3,8 +3,6 @@ using UnityEngine;
 public class ForwardLineAim : MonoBehaviour, IAim
 {
 	[Header("Default Aim Line")]
-	[SerializeField] 
-	private Vector3 defaultRotationEuler = new Vector3(0, 0, 0);
 	
 	public bool IsAimed => true;
 
@@ -21,7 +19,7 @@ public class ForwardLineAim : MonoBehaviour, IAim
 	{
 		if (currentTower.towerGunHeadMoveable)
 		{
-			transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(defaultRotationEuler), Time.deltaTime * currentTower.rotationSpeed);
+			transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(Vector3.zero), Time.deltaTime * currentTower.rotationSpeed);
 		}
 	}
 

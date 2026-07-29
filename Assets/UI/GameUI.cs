@@ -16,7 +16,7 @@ public class GameUI : MonoBehaviour
 
 	private void Start()
 	{
-		_presenter.Start();
+		_presenter.Initialize();
 	}
 
 	private void Update()
