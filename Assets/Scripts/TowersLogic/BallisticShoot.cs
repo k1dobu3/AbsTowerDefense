@@ -3,6 +3,7 @@ using Cysharp.Threading.Tasks;
 using System.Threading;
 using AbsTowerDefense.GameObjectPool;
 using AbsTowerDefense.TowersLogic.Abstract;
+using AbsTowerDefense.MonsterLogic.Abstract;
 
 namespace AbsTowerDefense.TowersLogic
 {
@@ -20,7 +21,7 @@ namespace AbsTowerDefense.TowersLogic
 		[SerializeField]
 		private GameObject _sparkles;
 
-		public bool TryShoot(float fireSpeed, GameObject target, float startMuzzleSpeed, Vector3 predictedPos)
+		public bool TryShoot(float fireSpeed, IDamageable target, float startMuzzleSpeed, Vector3 predictedPos)
 		{
 			if (_canShoot)
 			{
@@ -59,7 +60,7 @@ namespace AbsTowerDefense.TowersLogic
 			return projectile;
 		}
 
-		private async UniTaskVoid MakeShoot(float firespeed, GameObject target, float startMuzzleSpeed, CancellationToken cancellationToken, Vector3? predictedPos = null)
+		private async UniTaskVoid MakeShoot(float firespeed, IDamageable target, float startMuzzleSpeed, CancellationToken cancellationToken, Vector3? predictedPos = null)
 		{
 			_canShoot = false;
 			CannonProjectile projectile = SpawnProjectile();

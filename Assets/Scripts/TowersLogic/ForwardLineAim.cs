@@ -1,5 +1,6 @@
 using UnityEngine;
 using AbsTowerDefense.TowersLogic.Abstract;
+using AbsTowerDefense.MonsterLogic.Abstract;
 
 namespace AbsTowerDefense.TowersLogic
 {
@@ -9,11 +10,11 @@ namespace AbsTowerDefense.TowersLogic
 		
 		public bool IsAimed => true;
 
-		public void AimTarget(GameObject _target, Vector3 predictedPosition, TowerDataSO currentTower)
+		public void AimTarget(IDamageable _target, Vector3 predictedPosition, TowerDataSO currentTower)
 		{
 			if (currentTower.towerGunHeadMoveable)
 			{
-				Vector3 direction = (_target.transform.position - transform.position).normalized;
+				Vector3 direction = (_target.Transform.position - transform.position).normalized;
 				transform.rotation = Quaternion.LookRotation(direction);
 			}
 		} 
@@ -31,9 +32,9 @@ namespace AbsTowerDefense.TowersLogic
 			return 0;
 		}
 
-		public Vector3 GetPredictedPosition(GameObject target, Vector3 towerPosition, float projectileSpeed)
+		public Vector3 GetPredictedPosition(IDamageable target, Vector3 towerPosition, float projectileSpeed)
 		{
-			return (target.transform.position);
+			return (target.Transform.position);
 		}
 	}
 }

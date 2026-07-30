@@ -24,6 +24,10 @@ namespace AbsTowerDefense.MonsterLogic
 		[SerializeField]
 		private Rigidbody _rb;
 
+
+		public Transform Transform => transform;
+		public bool IsAlive => _hp > 0 && gameObject.activeInHierarchy;
+
 		public Vector3 MoveDirection
 		{
 			get

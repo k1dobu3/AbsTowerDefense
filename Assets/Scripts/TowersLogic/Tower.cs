@@ -1,5 +1,6 @@
 using UnityEngine;
 using AbsTowerDefense.TowersLogic.Abstract;
+using AbsTowerDefense.MonsterLogic.Abstract;
 
 namespace AbsTowerDefense.TowersLogic
 {
@@ -20,7 +21,7 @@ namespace AbsTowerDefense.TowersLogic
 		private IShootable _shooter;
 
 
-		private GameObject _target;
+		private IDamageable _target;
 
 		private void Awake()
 		{
@@ -32,7 +33,7 @@ namespace AbsTowerDefense.TowersLogic
 		public void LateUpdate()
 		{
 			_target = _targetFinder.FindTarget(transform.position, _currentTowerData.fireRange);
-			if (_target)
+			if (_target != null)
 			{
 				Vector3 predictedPostion = _targetAim.GetPredictedPosition(_target, transform.position, _currentTowerData.startMuzzleSpeed);
 				_targetAim.AimTarget(_target, predictedPostion, _currentTowerData);
@@ -47,5 +48,5 @@ namespace AbsTowerDefense.TowersLogic
 				_targetAim.AimReset(_currentTowerData);
 			}
 		}
-	}	
+	}
 }

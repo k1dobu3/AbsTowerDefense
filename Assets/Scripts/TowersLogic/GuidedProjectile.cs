@@ -1,16 +1,17 @@
 ﻿using UnityEngine;
 using AbsTowerDefense.GameObjectPool;
+using AbsTowerDefense.MonsterLogic.Abstract;
 
 namespace AbsTowerDefense.TowersLogic
 {
 	public class GuidedProjectile : BaseProjectile
 	{
-		private GameObject _target;
+		private IDamageable _target;
 		private AmmoSO _currentAmmoData;
 		private GameObjectPool<GuidedProjectile> _pool;
 		private Collider _collider;
 
-		public void Initialize(AmmoSO ammoData, GameObject target)
+		public void Initialize(AmmoSO ammoData, IDamageable target)
 		{
 			_currentAmmoData = ammoData;
 			damage = _currentAmmoData.ammoDamage;
@@ -37,13 +38,14 @@ namespace AbsTowerDefense.TowersLogic
 		}
 
 		private void Update () {
-			if (_target == null || !_target.gameObject.activeInHierarchy) {
+			if (_target == null || !_target.IsAlive) {
 				OnDespawn();
 				return;
 			}
 
-			var translation = _target.transform.position - transform.position;
-			if (translation.magnitude > _currentAmmoData.ammoSpeed) {
+			var translation = _target.Transform.position - transform.position;
+			if (translation.magnitude > _currentAmmoData.ammoSpeed) 
+			{
 				translation = translation.normalized * _currentAmmoData.ammoSpeed;
 			}
 			transform.Translate (translation);

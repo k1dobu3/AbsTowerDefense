@@ -3,6 +3,8 @@ using Cysharp.Threading.Tasks;
 using System.Threading;
 using AbsTowerDefense.GameObjectPool;
 using AbsTowerDefense.TowersLogic.Abstract;
+using AbsTowerDefense.MonsterLogic.Abstract;
+using System.Data.Common;
 
 namespace AbsTowerDefense.TowersLogic
 {
@@ -18,7 +20,7 @@ namespace AbsTowerDefense.TowersLogic
 		[SerializeField]
 		private GameObject _halo;
 
-		public bool TryShoot(float fireSpeed, GameObject target, float startMuzzleSpeed, Vector3 predictedPos)
+		public bool TryShoot(float fireSpeed, IDamageable target, float startMuzzleSpeed, Vector3 predictedPos)
 		{
 			if (_canShoot && target != null)
 			{
@@ -50,7 +52,7 @@ namespace AbsTowerDefense.TowersLogic
 			}
 		}
 
-		private void SpawnProjectile(GameObject target = null)
+		private void SpawnProjectile(IDamageable target = null)
 		{
 			GuidedProjectile crystal = _pool.GetObject();
 			if (crystal != null)
@@ -61,7 +63,7 @@ namespace AbsTowerDefense.TowersLogic
 			}
 		}
 
-		private async UniTaskVoid MakeShoot(float firespeed, GameObject target, CancellationToken cancellationToken)
+		private async UniTaskVoid MakeShoot(float firespeed, IDamageable target, CancellationToken cancellationToken)
 		{
 			_canShoot = false;
 			SpawnProjectile(target);

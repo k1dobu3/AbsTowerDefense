@@ -2,6 +2,7 @@ using UnityEngine;
 using AbsTowerDefense.TowersLogic.Abstract;
 using AbsTowerDefense.MonsterLogic;
 using AbsTowerDefense.Rules;
+using AbsTowerDefense.MonsterLogic.Abstract;
 
 namespace AbsTowerDefense.TowersLogic
 {
@@ -20,7 +21,7 @@ namespace AbsTowerDefense.TowersLogic
 
 		public bool IsAimed => IsBodyAimed && IsBarrelAimed;
 
-		public void AimTarget(GameObject target, Vector3 predictedPosition, TowerDataSO currentTower)
+		public void AimTarget(IDamageable target, Vector3 predictedPosition, TowerDataSO currentTower)
 		{
 			if (currentTower.towerGunHeadMoveable)
 			{
@@ -92,16 +93,16 @@ namespace AbsTowerDefense.TowersLogic
 			return directTime * extraTimeFactor;
 		}
 
-		public Vector3 GetPredictedPosition(GameObject target, Vector3 towerPosition, float projectileSpeed)
+		public Vector3 GetPredictedPosition(IDamageable target, Vector3 towerPosition, float projectileSpeed)
 		{
-			Monster monster = target.GetComponent<Monster>();
+			Monster monster = target as Monster;
 			if (monster == null)
 			{
-				return target.transform.position;
+				return target.Transform.position;
 			}
 			Vector3 moveDirection = monster.MoveDirection;
 			Vector3 targetVelocity = moveDirection * monster.speed;
-			Vector3 currentPosition = target.transform.position;
+			Vector3 currentPosition = target.Transform.position;
 
 			Vector3 aimOffset = new Vector3(0, 2.3f, 0);
 			Vector3 aimStart = currentPosition + aimOffset;

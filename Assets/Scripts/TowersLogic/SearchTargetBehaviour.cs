@@ -1,14 +1,16 @@
 using UnityEngine;
 using AbsTowerDefense.TowersLogic.Abstract;
+using AbsTowerDefense.MonsterLogic.Abstract;
+using Unity.VisualScripting;
 
 namespace AbsTowerDefense.TowersLogic
 {
 	public class SearchTargetBehaviour : MonoBehaviour, ITargetable
 	{
-		public GameObject FindTarget(Vector3 searcherPos, float fireRange)
+		public IDamageable FindTarget(Vector3 searcherPos, float fireRange)
 		{
 			Collider[] colliders = Physics.OverlapSphere(searcherPos, fireRange);
-			GameObject nearestTarget = null;
+			IDamageable nearestTarget = null;
 
 			foreach (var col in colliders)
 			{
@@ -17,7 +19,7 @@ namespace AbsTowerDefense.TowersLogic
 					float distance = (searcherPos - col.transform.position).sqrMagnitude;
 					if (distance < fireRange*fireRange)
 					{
-						nearestTarget = col.gameObject;
+						nearestTarget = col.GetComponent<IDamageable>();
 					}
 					else
 					{
@@ -25,7 +27,6 @@ namespace AbsTowerDefense.TowersLogic
 					}
 				}
 			}
-
 			return nearestTarget;
 		}
 	}
