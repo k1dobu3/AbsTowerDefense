@@ -1,7 +1,10 @@
 using UnityEngine;
 
-public interface IShootable
+namespace AbsTowerDefense.TowersLogic.Abstract
 {
-	float сurrentProjectileSpeed { get; }
-	bool TryShoot(float firespeed, GameObject target, float startMuzzleSpeed, Vector3 predictedPos);
+	public interface IShootable
+	{
+		float сurrentProjectileSpeed { get; }
+		bool TryShoot(float firespeed, GameObject target, float startMuzzleSpeed, Vector3 predictedPos);
+	}
 }

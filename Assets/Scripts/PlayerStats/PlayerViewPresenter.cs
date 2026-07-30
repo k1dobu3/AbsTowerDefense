@@ -1,58 +1,61 @@
 using System;
 
-public class PlayerViewPresenter : IDisposable
+namespace AbsTowerDefense.PlayerStats
 {
-	private readonly PlayerStatsModel _model;
-	private readonly PlayerStatsView _view;
-
-	public PlayerViewPresenter(PlayerStatsModel model, PlayerStatsView view)
+	public class PlayerViewPresenter : IDisposable
 	{
-		_model = model;
-		_view = view;
-		_model.OnStatsChanged += UpdateView;
-		_model.OnMonsterSpawnTimerChanged += UpdateViewMonsterTimer;
-	}
+		private readonly PlayerStatsModel _model;
+		private readonly PlayerStatsView _view;
 
-	public void Initialize()
-	{
-		if (AnalyticsKillsCounter.Instance != null)
+		public PlayerViewPresenter(PlayerStatsModel model, PlayerStatsView view)
 		{
-			AnalyticsKillsCounter.Instance.OnKillsCountChanged += UpdateModelKills;
-			// GameManager.Instance.OnGameTimeWasChanged += UpdateModelGameTimer;
+			_model = model;
+			_view = view;
+			_model.OnStatsChanged += UpdateView;
+			_model.OnMonsterSpawnTimerChanged += UpdateViewMonsterTimer;
 		}
-		
-		_view.Initialize();
-		UpdateView();
-	}
 
-	public void UpdateViewMonsterTimer()
-	{
-		_view.TimersUpdate(_model);
-	}
-
-	// private void UpdateModelGameTimer(float gameTime)
-	// {
-	//     _model.UpdateGameTimer(gameTime);
-	// }
-
-	private void UpdateModelKills(int kills)
-	{
-		_model.UpdateKills(kills);
-	}
-
-	private void UpdateView()
-	{
-		_view.StatsUpdate(_model);
-	}
-
-	public void Dispose()
-	{
-		_model.OnStatsChanged -= UpdateView;
-		_model.OnMonsterSpawnTimerChanged -= UpdateViewMonsterTimer;
-		if (AnalyticsKillsCounter.Instance != null)
+		public void Initialize()
 		{
-			AnalyticsKillsCounter.Instance.OnKillsCountChanged -= UpdateModelKills;
-			// GameManager.Instance.OnGameTimeWasChanged -= UpdateModelGameTimer;
+			if (AnalyticsKillsCounter.Instance != null)
+			{
+				AnalyticsKillsCounter.Instance.OnKillsCountChanged += UpdateModelKills;
+				// GameManager.Instance.OnGameTimeWasChanged += UpdateModelGameTimer;
+			}
+			
+			_view.Initialize();
+			UpdateView();
+		}
+
+		public void UpdateViewMonsterTimer()
+		{
+			_view.TimersUpdate(_model);
+		}
+
+		// private void UpdateModelGameTimer(float gameTime)
+		// {
+		//     _model.UpdateGameTimer(gameTime);
+		// }
+
+		private void UpdateModelKills(int kills)
+		{
+			_model.UpdateKills(kills);
+		}
+
+		private void UpdateView()
+		{
+			_view.StatsUpdate(_model);
+		}
+
+		public void Dispose()
+		{
+			_model.OnStatsChanged -= UpdateView;
+			_model.OnMonsterSpawnTimerChanged -= UpdateViewMonsterTimer;
+			if (AnalyticsKillsCounter.Instance != null)
+			{
+				AnalyticsKillsCounter.Instance.OnKillsCountChanged -= UpdateModelKills;
+				// GameManager.Instance.OnGameTimeWasChanged -= UpdateModelGameTimer;
+			}
 		}
 	}
 }

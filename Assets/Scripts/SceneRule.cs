@@ -1,26 +1,29 @@
 using UnityEngine;
 
-public class SceneRule : MonoBehaviour
+namespace AbsTowerDefense.Rules
 {
-	[SerializeField] 
-	public PhysicParSO _currentPhysicRule;
-	private float _sceneGravity;
-	public static SceneRule Instance { get; private set; }
-	public float sceneGravity { get { return _sceneGravity; } set { _sceneGravity = value; } }
-
-	void Awake()
+	public class SceneRule : MonoBehaviour
 	{
-		if (Instance == null)
+		[SerializeField] 
+		public PhysicParSO _currentPhysicRule;
+		private float _sceneGravity;
+		public static SceneRule Instance { get; private set; }
+		public float sceneGravity { get { return _sceneGravity; } set { _sceneGravity = value; } }
+
+		void Awake()
 		{
-			Instance = this;
-			DontDestroyOnLoad(gameObject);
+			if (Instance == null)
+			{
+				Instance = this;
+				DontDestroyOnLoad(gameObject);
+			}
+			else
+			{
+				Destroy(gameObject);
+				return;
+			}
+			sceneGravity = _currentPhysicRule.gravityG;
+			Physics.gravity = new Vector3(0, -sceneGravity, 0);
 		}
-		else
-		{
-			Destroy(gameObject);
-			return;
-		}
-		sceneGravity = _currentPhysicRule.gravityG;
-		Physics.gravity = new Vector3(0, -sceneGravity, 0);
 	}
 }

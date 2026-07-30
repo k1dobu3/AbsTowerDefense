@@ -1,8 +1,12 @@
 using UnityEngine;
+using AbsTowerDefense.GameObjectPool.Abstract;
 
-public abstract class BaseProjectile : MonoBehaviour, IPoolable
+namespace AbsTowerDefense.TowersLogic
 {
-	public float damage;
-	public abstract void OnSpawn();
-	public abstract void OnDespawn();
+	public abstract class BaseProjectile : MonoBehaviour, IPoolable
+	{
+		public float damage;
+		public abstract void OnSpawn();
+		public abstract void OnDespawn();
+	}
 }

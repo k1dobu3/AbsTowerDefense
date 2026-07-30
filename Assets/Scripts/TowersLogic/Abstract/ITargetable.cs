@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public interface ITargetable
+namespace AbsTowerDefense.TowersLogic.Abstract
 {
-	GameObject FindTarget(Vector3 searcherPos, float fireRange);
+	public interface ITargetable
+	{
+		GameObject FindTarget(Vector3 searcherPos, float fireRange);
+	}
 }

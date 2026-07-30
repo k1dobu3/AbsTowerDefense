@@ -1,72 +1,76 @@
 using UnityEngine;
-using Unity.VisualScripting;
+using AbsTowerDefense.GameObjectPool;
+using AbsTowerDefense.PlayerStats;
 
-public class MonsterSpawner : MonoBehaviour
+namespace AbsTowerDefense.MonsterLogic
 {
-	private PlayerStatsModel _model;
-	private float _lastSpawn = -1;
-	private float _timeLeft;
-	private GameObjectPool<Monster> _monsterPool;
-
-	[SerializeField]
-	public float _interval = 3;
-	[SerializeField]
-	private int _maxPoolSize = 10;
-	[SerializeField]
-	private GameObject _moveTarget;
-	[SerializeField]
-	private MonsterDataSO _monsterData;
-	[SerializeField]
-	private GameUI gameUI;
-
-	public void SpawnMonster()
+	public class MonsterSpawner : MonoBehaviour
 	{
-		Monster monster = _monsterPool.GetObject();
-		if (monster != null)
-		{
-			monster.transform.position = transform.position;
-			monster.SetMoveTarget(_moveTarget);
-			monster.speed = _monsterData.speed;
-			monster.hp = _monsterData.maxHP;
-			monster.SetPool(_monsterPool);
+		private PlayerStatsModel _model;
+		private float _lastSpawn = -1;
+		private float _timeLeft;
+		private GameObjectPool<Monster> _monsterPool;
 
-			monster.rb.useGravity = false;
+		[SerializeField]
+		public float _interval = 3;
+		[SerializeField]
+		private int _maxPoolSize = 10;
+		[SerializeField]
+		private GameObject _moveTarget;
+		[SerializeField]
+		private MonsterDataSO _monsterData;
+		[SerializeField]
+		private GameUI gameUI;
+
+		public void SpawnMonster()
+		{
+			Monster monster = _monsterPool.GetObject();
+			if (monster != null)
+			{
+				monster.transform.position = transform.position;
+				monster.SetMoveTarget(_moveTarget);
+				monster.speed = _monsterData.speed;
+				monster.hp = _monsterData.maxHP;
+				monster.SetPool(_monsterPool);
+
+				monster.rb.useGravity = false;
+			}
 		}
-	}
 
-	public void ReturnToPool(Monster monster)
-	{
-		_monsterPool.ReturnObject(monster);
-	}
-
-	private void Awake()
-	{
-		_monsterPool = new GameObjectPool<Monster>(_monsterData.monsterPrefab, _maxPoolSize, "Monster Pool");
-	}
-
-	private void Start()
-	{
-		_lastSpawn = -_interval;
-		_model = gameUI.GetPlayerStatsModel();
-	}
-
-	private void Update()
-	{
-		if (Time.time > _lastSpawn + _interval)
+		public void ReturnToPool(Monster monster)
 		{
-			SpawnMonster();
-			_lastSpawn = Time.time;
-			
+			_monsterPool.ReturnObject(monster);
 		}
-		_timeLeft = (_lastSpawn + _interval) - Time.time;
-		_model.UpdateMonsterSpawnTimer(_timeLeft);
-	}
 
-	private void OnDestroy()
-	{
-		if (_monsterPool != null)
+		private void Awake()
 		{
-			_monsterPool.ClearPool();	
+			_monsterPool = new GameObjectPool<Monster>(_monsterData.monsterPrefab, _maxPoolSize, "Monster Pool");
+		}
+
+		private void Start()
+		{
+			_lastSpawn = -_interval;
+			_model = gameUI.GetPlayerStatsModel();
+		}
+
+		private void Update()
+		{
+			if (Time.time > _lastSpawn + _interval)
+			{
+				SpawnMonster();
+				_lastSpawn = Time.time;
+				
+			}
+			_timeLeft = (_lastSpawn + _interval) - Time.time;
+			_model.UpdateMonsterSpawnTimer(_timeLeft);
+		}
+
+		private void OnDestroy()
+		{
+			if (_monsterPool != null)
+			{
+				_monsterPool.ClearPool();	
+			}
 		}
 	}
 }

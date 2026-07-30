@@ -1,32 +1,35 @@
 using System;
 
-public class PlayerStatsModel
+namespace AbsTowerDefense.PlayerStats
 {
-	public int Money { get; private set; } = 150;
-	public int Score { get; private set; } = 0;
-	public int Kills { get; private set; } = 0;
-	public float TimeToNextSpawnMonster { get; private set; } = 30f;
-	public float AllGameTime { get; private set;} = 0f;
-
-	public event Action OnStatsChanged;
-	public event Action OnMonsterSpawnTimerChanged;
-	public event Action OnGameTimeChanged;
-
-	public void UpdateKills(int currentKills)
+	public class PlayerStatsModel
 	{
-		Kills = currentKills;
-		OnStatsChanged?.Invoke();
-	}
+		public int Money { get; private set; } = 150;
+		public int Score { get; private set; } = 0;
+		public int Kills { get; private set; } = 0;
+		public float TimeToNextSpawnMonster { get; private set; } = 30f;
+		public float AllGameTime { get; private set;} = 0f;
 
-	public void UpdateMonsterSpawnTimer(float currentTimeToNexSpawn)
-	{
-		TimeToNextSpawnMonster = currentTimeToNexSpawn;
-		OnMonsterSpawnTimerChanged?.Invoke();
-	}
+		public event Action OnStatsChanged;
+		public event Action OnMonsterSpawnTimerChanged;
+		public event Action OnGameTimeChanged;
 
-	public void UpdateGameTimer(float currentTime)
-	{
-		AllGameTime = currentTime;
-		OnGameTimeChanged?.Invoke();
+		public void UpdateKills(int currentKills)
+		{
+			Kills = currentKills;
+			OnStatsChanged?.Invoke();
+		}
+
+		public void UpdateMonsterSpawnTimer(float currentTimeToNexSpawn)
+		{
+			TimeToNextSpawnMonster = currentTimeToNexSpawn;
+			OnMonsterSpawnTimerChanged?.Invoke();
+		}
+
+		public void UpdateGameTimer(float currentTime)
+		{
+			AllGameTime = currentTime;
+			OnGameTimeChanged?.Invoke();
+		}
 	}
 }

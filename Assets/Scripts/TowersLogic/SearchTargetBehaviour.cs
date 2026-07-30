@@ -1,28 +1,32 @@
 using UnityEngine;
+using AbsTowerDefense.TowersLogic.Abstract;
 
-public class SearchTargetBehaviour : MonoBehaviour, ITargetable
+namespace AbsTowerDefense.TowersLogic
 {
-	public GameObject FindTarget(Vector3 searcherPos, float fireRange)
+	public class SearchTargetBehaviour : MonoBehaviour, ITargetable
 	{
-		Collider[] colliders = Physics.OverlapSphere(searcherPos, fireRange);
-		GameObject nearestTarget = null;
-
-		foreach (var col in colliders)
+		public GameObject FindTarget(Vector3 searcherPos, float fireRange)
 		{
-			if (col.CompareTag("Monster"))
+			Collider[] colliders = Physics.OverlapSphere(searcherPos, fireRange);
+			GameObject nearestTarget = null;
+
+			foreach (var col in colliders)
 			{
-				float distance = (searcherPos - col.transform.position).sqrMagnitude;
-				if (distance < fireRange*fireRange)
+				if (col.CompareTag("Monster"))
 				{
-					nearestTarget = col.gameObject;
-				}
-				else
-				{
-					nearestTarget = null;
+					float distance = (searcherPos - col.transform.position).sqrMagnitude;
+					if (distance < fireRange*fireRange)
+					{
+						nearestTarget = col.gameObject;
+					}
+					else
+					{
+						nearestTarget = null;
+					}
 				}
 			}
-		}
 
-		return nearestTarget;
+			return nearestTarget;
+		}
 	}
 }

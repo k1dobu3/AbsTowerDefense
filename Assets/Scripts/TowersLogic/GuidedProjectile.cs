@@ -1,48 +1,52 @@
 ﻿using UnityEngine;
+using AbsTowerDefense.GameObjectPool;
 
-public class GuidedProjectile : BaseProjectile
+namespace AbsTowerDefense.TowersLogic
 {
-	private GameObject _target;
-	private AmmoSO _currentAmmoData;
-	private GameObjectPool<GuidedProjectile> _pool;
-	private Collider _collider;
+	public class GuidedProjectile : BaseProjectile
+	{
+		private GameObject _target;
+		private AmmoSO _currentAmmoData;
+		private GameObjectPool<GuidedProjectile> _pool;
+		private Collider _collider;
 
-	public void Initialize(AmmoSO ammoData, GameObject target)
-	{
-		_currentAmmoData = ammoData;
-		damage = _currentAmmoData.ammoDamage;
-		_target = target;
-	}
-	
-	public void SetPool(GameObjectPool<GuidedProjectile> pool) 
-	{
-		_pool = pool;
-	}
-
-	public override void OnSpawn()
-	{
-		if (_collider == null)
+		public void Initialize(AmmoSO ammoData, GameObject target)
 		{
-			_collider = GetComponent<Collider>();			
+			_currentAmmoData = ammoData;
+			damage = _currentAmmoData.ammoDamage;
+			_target = target;
 		}
-	}
-
-	public override void OnDespawn()
-	{
-		_target = null;
-		_pool.ReturnObject(this);
-	}
-
-	private void Update () {
-		if (_target == null || !_target.gameObject.activeInHierarchy) {
-			OnDespawn();
-			return;
+		
+		public void SetPool(GameObjectPool<GuidedProjectile> pool) 
+		{
+			_pool = pool;
 		}
 
-		var translation = _target.transform.position - transform.position;
-		if (translation.magnitude > _currentAmmoData.ammoSpeed) {
-			translation = translation.normalized * _currentAmmoData.ammoSpeed;
+		public override void OnSpawn()
+		{
+			if (_collider == null)
+			{
+				_collider = GetComponent<Collider>();			
+			}
 		}
-		transform.Translate (translation);
+
+		public override void OnDespawn()
+		{
+			_target = null;
+			_pool.ReturnObject(this);
+		}
+
+		private void Update () {
+			if (_target == null || !_target.gameObject.activeInHierarchy) {
+				OnDespawn();
+				return;
+			}
+
+			var translation = _target.transform.position - transform.position;
+			if (translation.magnitude > _currentAmmoData.ammoSpeed) {
+				translation = translation.normalized * _currentAmmoData.ammoSpeed;
+			}
+			transform.Translate (translation);
+		}
 	}
 }

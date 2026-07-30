@@ -1,4 +1,7 @@
-public interface IDamageable
+namespace AbsTowerDefense.MonsterLogic.Abstract
 {
-	bool IsDead();
+	public interface IDamageable
+	{
+		bool IsDead();
+	}
 }
