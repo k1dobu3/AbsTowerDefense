@@ -4,7 +4,6 @@ using System.Threading;
 using AbsTowerDefense.GameObjectPool;
 using AbsTowerDefense.TowersLogic.Abstract;
 using AbsTowerDefense.MonsterLogic.Abstract;
-using System.Data.Common;
 
 namespace AbsTowerDefense.TowersLogic
 {
@@ -33,23 +32,12 @@ namespace AbsTowerDefense.TowersLogic
 
 		private void Awake()
 		{
-			if (_pool == null)
-			{
-				_pool = new GameObjectPool<GuidedProjectile>(_currentAmmo.ammoProjectilePrefab, 5, "CrystalTower");
-			}
+			_pool = ProjectilePoolFactory.Instance.CreateOrGetPool<GuidedProjectile>(_currentAmmo.ammoProjectilePrefab, 5, $"{_currentAmmo.ammoName}");
 		}
 
 		private void Start()
 		{
 			SpawnProjectile();
-		}
-
-		private void OnDestroy()
-		{
-			if (_pool != null)
-			{
-				_pool.ClearPool();
-			}
 		}
 
 		private void SpawnProjectile(IDamageable target = null)

@@ -34,18 +34,7 @@ namespace AbsTowerDefense.TowersLogic
 
 		private void Awake()
 		{
-			if (_pool == null)
-			{
-				_pool = new GameObjectPool<CannonProjectile>(_currentAmmo.ammoProjectilePrefab, 5, "CannonTower");
-			}
-		}
-
-		private void OnDestroy()
-		{
-			if (_pool != null)
-			{
-				_pool.ClearPool();
-			}
+			_pool = ProjectilePoolFactory.Instance.CreateOrGetPool<CannonProjectile>(_currentAmmo.ammoProjectilePrefab, 5, $"{_currentAmmo.ammoName}");
 		}
 
 		private CannonProjectile SpawnProjectile()
