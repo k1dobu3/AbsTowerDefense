@@ -9,6 +9,6 @@ namespace AbsTowerDefense.TowersLogic.Abstract
 		void AimTarget(IDamageable _target, Vector3 predictedPosition, TowerDataSO currentTower);
 		void AimReset(TowerDataSO currentTower);
 		float CalculateFlightTime(Vector3 start, Vector3 target, float speed);
-		Vector3 GetPredictedPosition(IDamageable target, Vector3 towerPosition, float projectileSpeed);
+		Vector3 GetPredictedPosition(IDamageable target, Vector3 towerPosition, float startProjectileSpeed);
 	}	
 }

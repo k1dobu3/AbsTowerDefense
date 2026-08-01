@@ -32,7 +32,7 @@ namespace AbsTowerDefense.TowersLogic
 			return false;
 		}
 
-		private void Awake()
+		private void Start()
 		{
 			_pool = ProjectilePoolFactory.Instance.CreateOrGetPool<CannonProjectile>(_currentAmmo.ammoProjectilePrefab, 5, $"{_currentAmmo.ammoName}");
 		}
@@ -68,6 +68,7 @@ namespace AbsTowerDefense.TowersLogic
 			{
 				shootDirection = _shootStartPoint.forward;
 			}
+			//Vector3 shootDirection = _shootStartPoint != null ? _shootStartPoint.forward : _shootStartPoint.forward;
 
 			projectile.transform.SetPositionAndRotation(_shootStartPoint.position, Quaternion.LookRotation(shootDirection));
 			projectile.SetVelocity(shootDirection * startMuzzleSpeed);

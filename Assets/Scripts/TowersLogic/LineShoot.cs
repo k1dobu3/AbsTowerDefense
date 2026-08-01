@@ -30,13 +30,9 @@ namespace AbsTowerDefense.TowersLogic
 			return false;
 		}
 
-		private void Awake()
-		{
-			_pool = ProjectilePoolFactory.Instance.CreateOrGetPool<GuidedProjectile>(_currentAmmo.ammoProjectilePrefab, 5, $"{_currentAmmo.ammoName}");
-		}
-
 		private void Start()
 		{
+			_pool = ProjectilePoolFactory.Instance.CreateOrGetPool<GuidedProjectile>(_currentAmmo.ammoProjectilePrefab, 5, $"{_currentAmmo.ammoName}");
 			SpawnProjectile();
 		}
 

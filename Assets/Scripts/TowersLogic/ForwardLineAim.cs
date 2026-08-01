@@ -32,7 +32,7 @@ namespace AbsTowerDefense.TowersLogic
 			return 0;
 		}
 
-		public Vector3 GetPredictedPosition(IDamageable target, Vector3 towerPosition, float projectileSpeed)
+		public Vector3 GetPredictedPosition(IDamageable target, Vector3 towerPosition, float startProjectileSpeed)
 		{
 			return (target.Transform.position);
 		}

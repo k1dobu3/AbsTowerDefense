@@ -93,7 +93,7 @@ namespace AbsTowerDefense.TowersLogic
 			return directTime * extraTimeFactor;
 		}
 
-		public Vector3 GetPredictedPosition(IDamageable target, Vector3 towerPosition, float projectileSpeed)
+		public Vector3 GetPredictedPosition(IDamageable target, Vector3 towerPosition, float startProjectileSpeed)
 		{
 			Monster monster = target as Monster;
 			if (monster == null)
@@ -102,22 +102,22 @@ namespace AbsTowerDefense.TowersLogic
 			}
 			Vector3 moveDirection = monster.MoveDirection;
 			Vector3 targetVelocity = moveDirection * monster.speed;
-			Vector3 currentPosition = target.Transform.position;
+			Vector3 currentTargetPosition = target.Transform.position;
 
 			Vector3 aimOffset = new Vector3(0, 2.3f, 0);
-			Vector3 aimStart = currentPosition + aimOffset;
+			Vector3 aimStart = currentTargetPosition + aimOffset;
 
-			float time = Vector3.Distance(_shootStartPoint.position, currentPosition) / projectileSpeed;
+			float time = Vector3.Distance(_shootStartPoint.position, currentTargetPosition) / startProjectileSpeed;
 			Vector3 predictedPos = aimStart + targetVelocity * time;
 			for (int i = 0; i < 12; i++)
 			{
-				float newTime = CalculateFlightTime(_shootStartPoint.position, predictedPos, projectileSpeed);
+				float newTime = CalculateFlightTime(_shootStartPoint.position, predictedPos, startProjectileSpeed);
 				time = newTime;
 				if (newTime < 0)
 				{
 					break;
 				}
-				Vector3 newPredictedPos = currentPosition + targetVelocity * time + aimOffset;
+				Vector3 newPredictedPos = currentTargetPosition + targetVelocity * time + aimOffset;
 				if (Vector3.Distance(newPredictedPos, predictedPos) < 0.01f)
 				{
 					break;
