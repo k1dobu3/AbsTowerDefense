@@ -26,7 +26,7 @@ namespace AbsTowerDefense.TowersLogic
 			if (_canShoot)
 			{
 				MakeShoot(fireSpeed, target, startMuzzleSpeed, this.GetCancellationTokenOnDestroy(), predictedPos).Forget();
-				DisableSparkles(fireSpeed * 0.2f, this.GetCancellationTokenOnDestroy()).Forget();
+				DisableSparkles(fireSpeed * 0.8f, this.GetCancellationTokenOnDestroy()).Forget();
 				return true;
 			}
 			return false;

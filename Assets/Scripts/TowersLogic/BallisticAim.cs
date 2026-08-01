@@ -12,12 +12,27 @@ namespace AbsTowerDefense.TowersLogic
 		public bool IsBarrelAimed { get; private set; }
 
 		private float _gravity;
-
+		private const float forceReserveThreshold = 10f;
+		
+		[Header("Default Aim Line")]
 		[SerializeField]
 		private Transform childTransform;
 		[SerializeField]
 		private Transform _shootStartPoint;
-		[Header("Default Aim Line")]
+
+		[Header("Aim settings for position")]
+		[SerializeField]
+		private float angleScale = 1.08f;
+		[SerializeField]
+		private float targetAimHighOffset = 2.3f;
+		[SerializeField]
+		private float timeFlightScale = 1.0f;
+		[SerializeField]
+		private float gunHeadAimTolerance = 2f;
+		[SerializeField]
+		private float barrelAimTolerance = 3f;
+		[SerializeField]
+		private float predictionDistence = 0.5f;
 
 		public bool IsAimed => IsBodyAimed && IsBarrelAimed;
 
@@ -32,12 +47,13 @@ namespace AbsTowerDefense.TowersLogic
 				{
 					Quaternion targetRotation = Quaternion.LookRotation(aimDirection);
 					transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, currentTower.rotationSpeed * Time.deltaTime);
-					IsBodyAimed = Quaternion.Angle(transform.rotation, targetRotation) < 2f;
-					Debug.Log($"IsBodyAimed because {Quaternion.Angle(transform.rotation, targetRotation)} < then 2");
+					IsBodyAimed = Quaternion.Angle(transform.rotation, targetRotation) < gunHeadAimTolerance;
+					Debug.Log($"IsBodyAimed because {Quaternion.Angle(transform.rotation, targetRotation)} < then {gunHeadAimTolerance}");
 				}
 			}
 
 			float targetBarrelAngle = 0f;
+			bool canAimBarrel = false;
 
 			float dx = predictedPosition.x - transform.position.x;
 			float dz = predictedPosition.z - transform.position.z;
@@ -47,21 +63,23 @@ namespace AbsTowerDefense.TowersLogic
 			float angleDeg = CalcShootAngle(targetX, targetY, currentTower.startMuzzleSpeed);
 			if (!float.IsNaN(angleDeg) && angleDeg > 40f && angleDeg <= 89f)
 			{
-				angleDeg *= 1.08f;
+				angleDeg *= angleScale;
 				targetBarrelAngle = Mathf.Clamp(angleDeg, 40f, 89f);
+				canAimBarrel = true;
 				Debug.Log(targetBarrelAngle);
 			}
 
-			if (!float.IsNaN(targetBarrelAngle))
+			if (canAimBarrel)
 			{
 				float currentAngle = -childTransform.localEulerAngles.x;
 				float smoothedAngle = Mathf.MoveTowardsAngle(currentAngle, targetBarrelAngle, currentTower.barrelRotationSpeed * Time.deltaTime);
 				childTransform.localEulerAngles = new Vector3(-smoothedAngle, 0, 0);
-				IsBarrelAimed = Mathf.Abs(Mathf.DeltaAngle(smoothedAngle, targetBarrelAngle)) < 3f;
-				Debug.Log($"IsBarrelAimed because {Mathf.Abs(Mathf.DeltaAngle(smoothedAngle, targetBarrelAngle))} < then 3");
+				IsBarrelAimed = Mathf.Abs(Mathf.DeltaAngle(smoothedAngle, targetBarrelAngle)) < barrelAimTolerance;
+				Debug.Log($"IsBarrelAimed because {Mathf.Abs(Mathf.DeltaAngle(smoothedAngle, targetBarrelAngle))} < then {barrelAimTolerance}");
 			}
 			else
 			{
+				canAimBarrel = false;
 				AimReset(currentTower);
 			}
 		}
@@ -79,75 +97,60 @@ namespace AbsTowerDefense.TowersLogic
 			childTransform.localRotation = Quaternion.RotateTowards(childTransform.localRotation, defaultBarrelRot, Time.deltaTime * currentTower.barrelRotationSpeed);
 		}
 
-		public float CalculateFlightTime(Vector3 start, Vector3 target, float speed)
-		{
-			Vector3 to = target - start;
-			float horizontal = new Vector2(to.x, to.z).magnitude;
-			float height = to.y;
-
-			float angle = CalcShootAngle(horizontal, height, speed);
-			if (float.IsNaN(angle))
-			{
-				return -1f;
-			}
-
-			return angle;
-		}
-		
-		public float CalcFlightTime(float horizontalDistance, float angleDeg, float speed)
+		public float CalculateFlightTime(float horizontalDistance, float angleDeg, float speed)
 		{
 			float angleRad = angleDeg * Mathf.Deg2Rad;
-			float cos = Mathf.Cos(angleRad);
-			if (Mathf.Abs(cos) < 0.0001f)
+			float angleCos = Mathf.Cos(angleRad);
+			if (Mathf.Abs(angleCos) < 0.0001f)
 			{
 				return float.NaN;
 			}
-			return horizontalDistance / (speed * cos);
+			return horizontalDistance / (speed * angleCos);
 		}
 
 		public Vector3 GetPredictedPosition(IDamageable target, Vector3 towerPosition, float projectileSpeed)
 		{
 			Monster monster = target as Monster;
 			if (monster == null)
-				return target.Transform.position;
+			{
+				return target.Transform.position;				
+			}
 
-			Vector3 targetVel = monster.MoveDirection * monster.speed;
+			Vector3 targetVelocity = monster.MoveDirection * monster.speed;
 			Vector3 currentTargetPos = target.Transform.position;
-			Vector3 aimOffset = new Vector3(0f, 2.3f, 0f);
-			Vector3 startPos = _shootStartPoint.position;
+			Vector3 aimOffset = new Vector3(0f, targetAimHighOffset, 0f);
+			Vector3 shootStartPos = _shootStartPoint.position;
 
 			Vector3 predicted = currentTargetPos + aimOffset;
 			const int iterations = 10;
 
 			for (int i = 0; i < iterations; i++)
 			{
-				Vector3 to = predicted - startPos;
+				Vector3 to = predicted - shootStartPos;
 				float distXZ = new Vector2(to.x, to.z).magnitude;
 				float height = to.y;
 
-				float angle = CalcShootAngle(distXZ, height, projectileSpeed);
-				if (float.IsNaN(angle))
+				float angleDeg = CalcShootAngle(distXZ, height, projectileSpeed);
+				if (float.IsNaN(angleDeg))
 				{
 					break;					
 				}
 
-				float flightT = CalcFlightTime(distXZ, angle, projectileSpeed);
+				float flightT = CalculateFlightTime(distXZ, angleDeg, projectileSpeed);
 				if (float.IsNaN(flightT) || flightT <= 0f)
 				{
 					break;					
 				}
 
-				float timeFlightScale = 1f;
-				Vector3 newPredicted = currentTargetPos + targetVel * (flightT * timeFlightScale) + aimOffset;
+				Vector3 newPredicted = currentTargetPos + targetVelocity * (flightT * timeFlightScale) + aimOffset;
 
-				if (Vector3.Distance(newPredicted, predicted) < 0.05f)
+				if (Vector3.Distance(newPredicted, predicted) < predictionDistence)
 				{
 					break;					
 				}
-
+				
 				predicted = newPredicted;
 			}
-
 			return predicted;
 		}
 
@@ -165,7 +168,7 @@ namespace AbsTowerDefense.TowersLogic
 			float v2 = speed * speed;
 			float v4 = v2 * v2;
 			float forceReserve = v4 - _gravity * (_gravity * horizontalDistance * horizontalDistance + 2 * heightDifference * v2);
-			if (forceReserve < 10f)
+			if (forceReserve < forceReserveThreshold)
 			{
 				return float.NaN;
 			}

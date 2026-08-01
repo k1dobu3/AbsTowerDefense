@@ -20,7 +20,6 @@ namespace AbsTowerDefense.PlayerStats
 			if (AnalyticsKillsCounter.Instance != null)
 			{
 				AnalyticsKillsCounter.Instance.OnKillsCountChanged += UpdateModelKills;
-				// GameManager.Instance.OnGameTimeWasChanged += UpdateModelGameTimer;
 			}
 			
 			_view.Initialize();
@@ -31,11 +30,6 @@ namespace AbsTowerDefense.PlayerStats
 		{
 			_view.TimersUpdate(_model);
 		}
-
-		// private void UpdateModelGameTimer(float gameTime)
-		// {
-		//     _model.UpdateGameTimer(gameTime);
-		// }
 
 		private void UpdateModelKills(int kills)
 		{
@@ -54,7 +48,6 @@ namespace AbsTowerDefense.PlayerStats
 			if (AnalyticsKillsCounter.Instance != null)
 			{
 				AnalyticsKillsCounter.Instance.OnKillsCountChanged -= UpdateModelKills;
-				// GameManager.Instance.OnGameTimeWasChanged -= UpdateModelGameTimer;
 			}
 		}
 	}
