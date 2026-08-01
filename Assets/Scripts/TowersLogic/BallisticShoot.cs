@@ -26,13 +26,13 @@ namespace AbsTowerDefense.TowersLogic
 			if (_canShoot)
 			{
 				MakeShoot(fireSpeed, target, startMuzzleSpeed, this.GetCancellationTokenOnDestroy(), predictedPos).Forget();
-				DisableSparkles(fireSpeed * 0.2f, this.GetCancellationTokenOnDestroy()).Forget();
+				DisableSparkles(fireSpeed * 0.8f, this.GetCancellationTokenOnDestroy()).Forget();
 				return true;
 			}
 			return false;
 		}
 
-		private void Start()
+		private void Awake()
 		{
 			_pool = ProjectilePoolFactory.Instance.CreateOrGetPool<CannonProjectile>(_currentAmmo.ammoProjectilePrefab, 5, $"{_currentAmmo.ammoName}");
 		}
@@ -59,16 +59,7 @@ namespace AbsTowerDefense.TowersLogic
 				_canShoot = true;
 				return;
 			}
-			Vector3 shootDirection;
-			if (predictedPos.HasValue)
-			{
-				shootDirection = (predictedPos.Value - _shootStartPoint.position).normalized;
-			}
-			else
-			{
-				shootDirection = _shootStartPoint.forward;
-			}
-			//Vector3 shootDirection = _shootStartPoint != null ? _shootStartPoint.forward : _shootStartPoint.forward;
+			Vector3 shootDirection = _shootStartPoint.forward;
 
 			projectile.transform.SetPositionAndRotation(_shootStartPoint.position, Quaternion.LookRotation(shootDirection));
 			projectile.SetVelocity(shootDirection * startMuzzleSpeed);

@@ -17,6 +17,7 @@ namespace AbsTowerDefense.TowersLogic
 		[Header("Tower Upgrade Data")]
 		public float rotationSpeed = 5f;
 		public float barrelRotationSpeed = 0f;
-		public float startMuzzleSpeed = 0f;
+		[Range(1f, 30f)]
+		public float startMuzzleSpeed = 1f;
 	}
 }

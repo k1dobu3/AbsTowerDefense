@@ -26,6 +26,7 @@ namespace AbsTowerDefense.MonsterLogic
 
 
 		public Transform Transform => transform;
+		public float Speed => _speed;
 		public bool IsAlive => _hp > 0 && gameObject.activeInHierarchy;
 
 		public Vector3 MoveDirection
