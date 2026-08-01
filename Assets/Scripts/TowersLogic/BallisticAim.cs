@@ -45,9 +45,10 @@ namespace AbsTowerDefense.TowersLogic
 			float targetX = (float)Mathf.Sqrt(dx * dx + dz * dz);
 			
 			float angleDeg = CalcShootAngle(targetX, targetY, currentTower.startMuzzleSpeed);
-			if (!float.IsNaN(angleDeg) && angleDeg > -60f && angleDeg <= 85f)
+			if (!float.IsNaN(angleDeg) && angleDeg > 40f && angleDeg <= 89f)
 			{
-				targetBarrelAngle = Mathf.Clamp(angleDeg, -60f, 85f);
+				angleDeg *= 1.08f;
+				targetBarrelAngle = Mathf.Clamp(angleDeg, 40f, 89f);
 				Debug.Log(targetBarrelAngle);
 			}
 
@@ -57,7 +58,7 @@ namespace AbsTowerDefense.TowersLogic
 				float smoothedAngle = Mathf.MoveTowardsAngle(currentAngle, targetBarrelAngle, currentTower.barrelRotationSpeed * Time.deltaTime);
 				childTransform.localEulerAngles = new Vector3(-smoothedAngle, 0, 0);
 				IsBarrelAimed = Mathf.Abs(Mathf.DeltaAngle(smoothedAngle, targetBarrelAngle)) < 3f;
-				Debug.Log($"IsBarrelAimed because {Mathf.Abs(Mathf.DeltaAngle(smoothedAngle, targetBarrelAngle))} < then 1");
+				Debug.Log($"IsBarrelAimed because {Mathf.Abs(Mathf.DeltaAngle(smoothedAngle, targetBarrelAngle))} < then 3");
 			}
 			else
 			{
@@ -80,53 +81,74 @@ namespace AbsTowerDefense.TowersLogic
 
 		public float CalculateFlightTime(Vector3 start, Vector3 target, float speed)
 		{
-			float directDist = Vector3.Distance(start, target);
-			if (speed <= 0f)
+			Vector3 to = target - start;
+			float horizontal = new Vector2(to.x, to.z).magnitude;
+			float height = to.y;
+
+			float angle = CalcShootAngle(horizontal, height, speed);
+			if (float.IsNaN(angle))
 			{
 				return -1f;
 			}
-			float directTime = directDist / speed;
 
-			float heightDiff = target.y - start.y;
-			float extraTimeFactor = 1.0f + Mathf.Abs(heightDiff) * 0.015f;
-
-			return directTime * extraTimeFactor;
+			return angle;
+		}
+		
+		public float CalcFlightTime(float horizontalDistance, float angleDeg, float speed)
+		{
+			float angleRad = angleDeg * Mathf.Deg2Rad;
+			float cos = Mathf.Cos(angleRad);
+			if (Mathf.Abs(cos) < 0.0001f)
+			{
+				return float.NaN;
+			}
+			return horizontalDistance / (speed * cos);
 		}
 
 		public Vector3 GetPredictedPosition(IDamageable target, Vector3 towerPosition, float projectileSpeed)
 		{
 			Monster monster = target as Monster;
 			if (monster == null)
-			{
 				return target.Transform.position;
-			}
-			Vector3 moveDirection = monster.MoveDirection;
-			Vector3 targetVelocity = moveDirection * monster.speed;
-			Vector3 currentPosition = target.Transform.position;
 
-			Vector3 aimOffset = new Vector3(0, 2.3f, 0);
-			Vector3 aimStart = currentPosition + aimOffset;
+			Vector3 targetVel = monster.MoveDirection * monster.speed;
+			Vector3 currentTargetPos = target.Transform.position;
+			Vector3 aimOffset = new Vector3(0f, 2.3f, 0f);
+			Vector3 startPos = _shootStartPoint.position;
 
-			float time = Vector3.Distance(_shootStartPoint.position, currentPosition) / projectileSpeed;
-			Vector3 predictedPos = aimStart + targetVelocity * time;
-			for (int i = 0; i < 12; i++)
+			Vector3 predicted = currentTargetPos + aimOffset;
+			const int iterations = 10;
+
+			for (int i = 0; i < iterations; i++)
 			{
-				float newTime = CalculateFlightTime(_shootStartPoint.position, predictedPos, projectileSpeed);
-				time = newTime;
-				if (newTime < 0)
+				Vector3 to = predicted - startPos;
+				float distXZ = new Vector2(to.x, to.z).magnitude;
+				float height = to.y;
+
+				float angle = CalcShootAngle(distXZ, height, projectileSpeed);
+				if (float.IsNaN(angle))
 				{
-					break;
-				}
-				Vector3 newPredictedPos = currentPosition + targetVelocity * time + aimOffset;
-				if (Vector3.Distance(newPredictedPos, predictedPos) < 0.01f)
-				{
-					break;
+					break;					
 				}
 
-				predictedPos = newPredictedPos;
-				
+				float flightT = CalcFlightTime(distXZ, angle, projectileSpeed);
+				if (float.IsNaN(flightT) || flightT <= 0f)
+				{
+					break;					
+				}
+
+				float timeFlightScale = 1f;
+				Vector3 newPredicted = currentTargetPos + targetVel * (flightT * timeFlightScale) + aimOffset;
+
+				if (Vector3.Distance(newPredicted, predicted) < 0.05f)
+				{
+					break;					
+				}
+
+				predicted = newPredicted;
 			}
-			return predictedPos;
+
+			return predicted;
 		}
 
 		private void Start()
@@ -143,12 +165,12 @@ namespace AbsTowerDefense.TowersLogic
 			float v2 = speed * speed;
 			float v4 = v2 * v2;
 			float forceReserve = v4 - _gravity * (_gravity * horizontalDistance * horizontalDistance + 2 * heightDifference * v2);
-			if (forceReserve < -10f)
+			if (forceReserve < 10f)
 			{
 				return float.NaN;
 			}
 
-			float numerator = v2 - Mathf.Sqrt(forceReserve);
+			float numerator = v2 + Mathf.Sqrt(forceReserve);
 			float denominator = _gravity * horizontalDistance;
 			if (Mathf.Abs(denominator) < 0.0001f)
 			{
@@ -157,7 +179,7 @@ namespace AbsTowerDefense.TowersLogic
 			float angleRad = Mathf.Atan(numerator / denominator);
 			if (angleRad < 0)
 			{
-				angleRad = Mathf.PI + angleRad;
+				angleRad += Mathf.PI;
 			}
 			float angleDeg = angleRad * Mathf.Rad2Deg;
 

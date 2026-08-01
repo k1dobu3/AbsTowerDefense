@@ -59,15 +59,7 @@ namespace AbsTowerDefense.TowersLogic
 				_canShoot = true;
 				return;
 			}
-			Vector3 shootDirection;
-			if (predictedPos.HasValue)
-			{
-				shootDirection = (predictedPos.Value - _shootStartPoint.position).normalized;
-			}
-			else
-			{
-				shootDirection = _shootStartPoint.forward;
-			}
+			Vector3 shootDirection = _shootStartPoint.forward;
 
 			projectile.transform.SetPositionAndRotation(_shootStartPoint.position, Quaternion.LookRotation(shootDirection));
 			projectile.SetVelocity(shootDirection * startMuzzleSpeed);

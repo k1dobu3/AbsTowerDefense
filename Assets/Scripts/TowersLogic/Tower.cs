@@ -35,11 +35,10 @@ namespace AbsTowerDefense.TowersLogic
 			_target = _targetFinder.FindTarget(transform.position, _currentTowerData.fireRange);
 			if (_target != null)
 			{
-				Vector3 predictedPostion = _targetAim.GetPredictedPosition(_target, transform.position, _currentTowerData.startMuzzleSpeed);
-				_targetAim.AimTarget(_target, predictedPostion, _currentTowerData);
+				Vector3 predictedPos = _targetAim.GetPredictedPosition(_target, transform.position, _currentTowerData.startMuzzleSpeed);
+        		_targetAim.AimTarget(_target, predictedPos, _currentTowerData);
 				if (_targetAim.IsAimed)
 				{
-					Vector3 predictedPos = _targetAim.GetPredictedPosition(_target, transform.position, _currentTowerData.startMuzzleSpeed);
 					_shooter.TryShoot(_currentTowerData.fireSpeedCD, _target, _currentTowerData.startMuzzleSpeed, predictedPos);
 				}
 			}
@@ -47,6 +46,7 @@ namespace AbsTowerDefense.TowersLogic
 			{
 				_targetAim.AimReset(_currentTowerData);
 			}
+
 		}
 	}
 }

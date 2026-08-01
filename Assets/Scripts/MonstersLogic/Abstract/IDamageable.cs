@@ -7,5 +7,6 @@ namespace AbsTowerDefense.MonsterLogic.Abstract
 		bool IsAlive { get; }
 		bool IsDead();
 		Transform Transform { get; }
+		float Speed { get; }
 	}
 }
