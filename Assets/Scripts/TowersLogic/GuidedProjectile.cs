@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System;
 using AbsTowerDefense.GameObjectPool;
 using AbsTowerDefense.MonsterLogic.Abstract;
 
@@ -8,19 +9,17 @@ namespace AbsTowerDefense.TowersLogic
 	{
 		private IDamageable _target;
 		private AmmoSO _currentAmmoData;
-		private GameObjectPool<GuidedProjectile> _pool;
 		private Collider _collider;
 
-		public void Initialize(AmmoSO ammoData, IDamageable target)
+		public bool _isDespawned;
+
+		public event Action<GuidedProjectile> OnDespawned;
+
+		public override void Initialize(AmmoSO ammoData, IDamageable target)
 		{
 			_currentAmmoData = ammoData;
 			damage = _currentAmmoData.ammoDamage;
 			_target = target;
-		}
-		
-		public void SetPool(GameObjectPool<GuidedProjectile> pool) 
-		{
-			_pool = pool;
 		}
 
 		public override void OnSpawn()
@@ -29,15 +28,26 @@ namespace AbsTowerDefense.TowersLogic
 			{
 				_collider = GetComponent<Collider>();			
 			}
+			_isDespawned = false;
 		}
 
 		public override void OnDespawn()
 		{
+			if (_isDespawned)
+			{
+				return;
+			}
 			_target = null;
-			_pool.ReturnObject(this);
+			_isDespawned = true;
+			OnDespawned?.Invoke(this);
 		}
 
-		private void Update () {
+		private void Update () 
+		{
+			if (_isDespawned)
+			{
+				return;
+			}
 			if (_target == null || !_target.IsAlive) {
 				OnDespawn();
 				return;

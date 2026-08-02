@@ -11,6 +11,7 @@ namespace AbsTowerDefense.TowersLogic
 	{
 		private bool _canShoot = true;
 		private GameObjectPool<GuidedProjectile> _pool;
+		private ProjectileFactory<GuidedProjectile> _projectileFactory;
 
 		public float сurrentProjectileSpeed { get {return _currentAmmo.ammoSpeed;} }
 
@@ -24,7 +25,7 @@ namespace AbsTowerDefense.TowersLogic
 			if (_canShoot && target != null)
 			{
 				MakeShoot(fireSpeed, target, this.GetCancellationTokenOnDestroy()).Forget();
-				DisableHalo(fireSpeed * 0.2f, this.GetCancellationTokenOnDestroy()).Forget();
+				DisableHalo(fireSpeed * 0.8f, this.GetCancellationTokenOnDestroy()).Forget();
 				return true;
 			}
 			return false;
@@ -33,24 +34,27 @@ namespace AbsTowerDefense.TowersLogic
 		private void Start()
 		{
 			_pool = PoolManager.Instance.CreateOrGetPool<GuidedProjectile>(_currentAmmo.ammoProjectilePrefab, 5, $"{_currentAmmo.ammoName}");
-			SpawnProjectile();
+			_projectileFactory = new ProjectileFactory<GuidedProjectile>(_pool, _currentAmmo);
 		}
 
-		private void SpawnProjectile(IDamageable target = null)
+		private void OnProjectileDespawned(GuidedProjectile projectile)
 		{
-			GuidedProjectile crystal = _pool.GetObject();
-			if (crystal != null)
-			{
-				crystal.transform.position = transform.position;
-				crystal.Initialize(_currentAmmo, target);
-				crystal.SetPool(_pool);
-			}
+			projectile.OnDespawned -= OnProjectileDespawned;
+			_projectileFactory.ReturnToPool(projectile);
 		}
 
 		private async UniTaskVoid MakeShoot(float firespeed, IDamageable target, CancellationToken cancellationToken)
 		{
 			_canShoot = false;
-			SpawnProjectile(target);
+			GuidedProjectile projectile = _projectileFactory.CreateProjectile(target);
+			if (projectile == null)
+			{
+				Debug.LogError("Выстрел отменен: projectile == null");
+				_canShoot = true;
+				return;
+			}
+			projectile.transform.position = transform.position;
+			projectile.OnDespawned += OnProjectileDespawned;
 			await UniTask.Delay((int)(firespeed * 1000), cancellationToken: cancellationToken);
 			_canShoot = true;
 		}
