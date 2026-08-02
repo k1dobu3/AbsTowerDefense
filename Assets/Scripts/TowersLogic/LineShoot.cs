@@ -32,7 +32,7 @@ namespace AbsTowerDefense.TowersLogic
 
 		private void Start()
 		{
-			_pool = ProjectilePoolFactory.Instance.CreateOrGetPool<GuidedProjectile>(_currentAmmo.ammoProjectilePrefab, 5, $"{_currentAmmo.ammoName}");
+			_pool = PoolManager.Instance.CreateOrGetPool<GuidedProjectile>(_currentAmmo.ammoProjectilePrefab, 5, $"{_currentAmmo.ammoName}");
 			SpawnProjectile();
 		}
 

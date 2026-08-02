@@ -9,7 +9,7 @@ namespace AbsTowerDefense.MonsterLogic
 		private PlayerStatsModel _model;
 		private float _lastSpawn = -1;
 		private float _timeLeft;
-		private GameObjectPool<Monster> _monsterPool;
+		private MonsterFactory _monsterFactory;
 
 		[SerializeField]
 		public float _interval = 3;
@@ -22,29 +22,10 @@ namespace AbsTowerDefense.MonsterLogic
 		[SerializeField]
 		private GameUI gameUI;
 
-		public void SpawnMonster()
-		{
-			Monster monster = _monsterPool.GetObject();
-			if (monster != null)
-			{
-				monster.transform.position = transform.position;
-				monster.SetMoveTarget(_moveTarget);
-				monster.speed = _monsterData.speed;
-				monster.hp = _monsterData.maxHP;
-				monster.SetPool(_monsterPool);
-
-				monster.rb.useGravity = false;
-			}
-		}
-
-		public void ReturnToPool(Monster monster)
-		{
-			_monsterPool.ReturnObject(monster);
-		}
-
 		private void Awake()
 		{
-			_monsterPool = new GameObjectPool<Monster>(_monsterData.monsterPrefab, _maxPoolSize, "Monster Pool");
+			var _monsterPool = PoolManager.Instance.CreateOrGetPool<Monster>(_monsterData.monsterPrefab, _maxPoolSize, $"{_monsterData.monsterName}");
+			_monsterFactory = new MonsterFactory(_monsterPool, _monsterData);
 		}
 
 		private void Start()
@@ -61,16 +42,23 @@ namespace AbsTowerDefense.MonsterLogic
 				_lastSpawn = Time.time;
 				
 			}
-			_timeLeft = (_lastSpawn + _interval) - Time.time;
+			_timeLeft = _lastSpawn + _interval - Time.time;
 			_model.UpdateMonsterSpawnTimer(_timeLeft);
 		}
 
-		private void OnDestroy()
+		private void SpawnMonster()
 		{
-			if (_monsterPool != null)
+			var monster = _monsterFactory.CreateMonster(transform.position, _moveTarget);
+			if (monster != null)
 			{
-				_monsterPool.ClearPool();	
+				monster.OnDied += OnMonsterDied;
 			}
+		}
+
+		private void OnMonsterDied(Monster monster)
+		{
+			monster.OnDied -= OnMonsterDied;
+			_monsterFactory.ReturnToPool(monster);
 		}
 	}
 }

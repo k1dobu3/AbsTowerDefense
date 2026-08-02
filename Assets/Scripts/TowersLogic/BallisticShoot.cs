@@ -34,7 +34,7 @@ namespace AbsTowerDefense.TowersLogic
 
 		private void Awake()
 		{
-			_pool = ProjectilePoolFactory.Instance.CreateOrGetPool<CannonProjectile>(_currentAmmo.ammoProjectilePrefab, 5, $"{_currentAmmo.ammoName}");
+			_pool = PoolManager.Instance.CreateOrGetPool<CannonProjectile>(_currentAmmo.ammoProjectilePrefab, 5, $"{_currentAmmo.ammoName}");
 		}
 
 		private CannonProjectile SpawnProjectile()
