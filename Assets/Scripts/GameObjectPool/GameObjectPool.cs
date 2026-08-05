@@ -51,6 +51,10 @@ namespace AbsTowerDefense.GameObjectPool
 			{
 				obj = pool.Dequeue();
 			}
+			else
+			{
+				obj = CreateNewInstance();
+			}
 			if (obj != null)
 			{
 				obj.gameObject.SetActive(true);

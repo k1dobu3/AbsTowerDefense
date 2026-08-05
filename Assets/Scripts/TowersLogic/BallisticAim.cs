@@ -48,7 +48,6 @@ namespace AbsTowerDefense.TowersLogic
 					Quaternion targetRotation = Quaternion.LookRotation(aimDirection);
 					transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, currentTower.rotationSpeed * Time.deltaTime);
 					IsBodyAimed = Quaternion.Angle(transform.rotation, targetRotation) < gunHeadAimTolerance;
-					Debug.Log($"IsBodyAimed because {Quaternion.Angle(transform.rotation, targetRotation)} < then {gunHeadAimTolerance}");
 				}
 			}
 
@@ -66,7 +65,6 @@ namespace AbsTowerDefense.TowersLogic
 				angleDeg *= angleScale;
 				targetBarrelAngle = Mathf.Clamp(angleDeg, 40f, 89f);
 				canAimBarrel = true;
-				Debug.Log(targetBarrelAngle);
 			}
 
 			if (canAimBarrel)
@@ -75,7 +73,6 @@ namespace AbsTowerDefense.TowersLogic
 				float smoothedAngle = Mathf.MoveTowardsAngle(currentAngle, targetBarrelAngle, currentTower.barrelRotationSpeed * Time.deltaTime);
 				childTransform.localEulerAngles = new Vector3(-smoothedAngle, 0, 0);
 				IsBarrelAimed = Mathf.Abs(Mathf.DeltaAngle(smoothedAngle, targetBarrelAngle)) < barrelAimTolerance;
-				Debug.Log($"IsBarrelAimed because {Mathf.Abs(Mathf.DeltaAngle(smoothedAngle, targetBarrelAngle))} < then {barrelAimTolerance}");
 			}
 			else
 			{
