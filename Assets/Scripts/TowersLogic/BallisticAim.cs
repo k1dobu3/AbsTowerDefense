@@ -12,6 +12,7 @@ namespace AbsTowerDefense.TowersLogic
 		public bool IsBarrelAimed { get; private set; }
 
 		private float _gravity;
+		private bool _canAimBarrel = false;
 		private const float forceReserveThreshold = 10f;
 		
 		[Header("Default Aim Line")]
@@ -22,7 +23,7 @@ namespace AbsTowerDefense.TowersLogic
 
 		[Header("Aim settings for position")]
 		[SerializeField]
-		private float angleScale = 1.08f;
+		private float angleScale = 1f;
 		[SerializeField]
 		private float targetAimHighOffset = 2.3f;
 		[SerializeField]
@@ -40,7 +41,7 @@ namespace AbsTowerDefense.TowersLogic
 		{
 			if (currentTower.towerGunHeadMoveable)
 			{
-				Vector3 aimDirection = predictedPosition - transform.position;
+				Vector3 aimDirection = predictedPosition - _shootStartPoint.position;
 				aimDirection.y = 0;
 
 				if (aimDirection != Vector3.zero)
@@ -52,22 +53,25 @@ namespace AbsTowerDefense.TowersLogic
 			}
 
 			float targetBarrelAngle = 0f;
-			bool canAimBarrel = false;
 
-			float dx = predictedPosition.x - transform.position.x;
-			float dz = predictedPosition.z - transform.position.z;
-			float targetY = predictedPosition.y - transform.position.y;
-			float targetX = (float)Mathf.Sqrt(dx * dx + dz * dz);
+			float dx = predictedPosition.x - _shootStartPoint.position.x;
+			float dz = predictedPosition.z - _shootStartPoint.position.z;
+			float targetY = predictedPosition.y - _shootStartPoint.position.y;
+			float targetX = Mathf.Sqrt(dx * dx + dz * dz);
 			
 			float angleDeg = CalcShootAngle(targetX, targetY, currentTower.startMuzzleSpeed);
-			if (!float.IsNaN(angleDeg) && angleDeg > 40f && angleDeg <= 89f)
+			if (!float.IsNaN(angleDeg) && angleDeg > 35f && angleDeg <= 89f)
 			{
 				angleDeg *= angleScale;
-				targetBarrelAngle = Mathf.Clamp(angleDeg, 40f, 89f);
-				canAimBarrel = true;
+				targetBarrelAngle = Mathf.Clamp(angleDeg, 35f, 89f);
+				_canAimBarrel = true;
+			}
+			else
+			{
+				_canAimBarrel = false;
 			}
 
-			if (canAimBarrel)
+			if (_canAimBarrel)
 			{
 				float currentAngle = -childTransform.localEulerAngles.x;
 				float smoothedAngle = Mathf.MoveTowardsAngle(currentAngle, targetBarrelAngle, currentTower.barrelRotationSpeed * Time.deltaTime);
@@ -76,7 +80,6 @@ namespace AbsTowerDefense.TowersLogic
 			}
 			else
 			{
-				canAimBarrel = false;
 				AimReset(currentTower);
 			}
 		}
@@ -119,7 +122,7 @@ namespace AbsTowerDefense.TowersLogic
 			Vector3 shootStartPos = _shootStartPoint.position;
 
 			Vector3 predicted = currentTargetPos + aimOffset;
-			const int iterations = 12;
+			const int iterations = 10;
 
 			for (int i = 0; i < iterations; i++)
 			{
