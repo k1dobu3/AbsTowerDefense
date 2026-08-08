@@ -119,7 +119,7 @@ namespace AbsTowerDefense.TowersLogic
 			Vector3 shootStartPos = _shootStartPoint.position;
 
 			Vector3 predicted = currentTargetPos + aimOffset;
-			const int iterations = 10;
+			const int iterations = 12;
 
 			for (int i = 0; i < iterations; i++)
 			{
