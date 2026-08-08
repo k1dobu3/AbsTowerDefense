@@ -6,27 +6,44 @@ namespace AbsTowerDefense.TowersLogic
 {
 	public class SearchTargetBehaviour : MonoBehaviour, ITargetable
 	{
+		private IDamageable _nearestTarget;
+
 		public IDamageable FindTarget(Vector3 searcherPos, float fireRange)
 		{
 			Collider[] colliders = Physics.OverlapSphere(searcherPos, fireRange);
-			IDamageable nearestTarget = null;
 
 			foreach (var col in colliders)
 			{
-				if (col.CompareTag("Monster"))
+				if (_nearestTarget != null)
 				{
-					float distance = (searcherPos - col.transform.position).sqrMagnitude;
-					if (distance < fireRange*fireRange)
+					if (_nearestTarget.Transform == null || !_nearestTarget.IsAlive)
 					{
-						nearestTarget = col.GetComponent<IDamageable>();
+						_nearestTarget = null;
 					}
 					else
 					{
-						nearestTarget = null;
+						float dist = Vector3.Distance(searcherPos, _nearestTarget.Transform.position);
+						if (dist > fireRange)
+						{
+							_nearestTarget = null;
+						}
+						else
+						{
+							return _nearestTarget;
+						}
 					}
 				}
+				if (col.CompareTag("Monster"))
+				{
+					_nearestTarget = col.GetComponent<IDamageable>();
+					break;
+				}
+				else
+				{
+					_nearestTarget = null;
+				}
 			}
-			return nearestTarget;
+			return _nearestTarget;
 		}
 	}
 }

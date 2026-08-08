@@ -8,8 +8,8 @@ namespace AbsTowerDefense.MonsterLogic
 		[Header("Monster Common Data")]
 		public string monsterName = "Labubu";
 		public float maxHP;
-		[Range(1f, 10f)]
-		public float speed = 0.1f;
+		[Range(2f, 8f)]
+		public float speed = 5f;
 		public int tokenPrice = 1;
 		public GameObject monsterPrefab;
 	}	
