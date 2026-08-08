@@ -16,7 +16,7 @@ namespace AbsTowerDefense.MonsterLogic
 		[SerializeField]
 		private int _maxPoolSize = 10;
 		[SerializeField]
-		private GameObject _moveTarget;
+		private Collider _moveGoTo;
 		[SerializeField]
 		private MonsterDataSO _monsterData;
 		[SerializeField]
@@ -48,7 +48,7 @@ namespace AbsTowerDefense.MonsterLogic
 
 		private void SpawnMonster()
 		{
-			var monster = _monsterFactory.CreateMonster(transform.position, _moveTarget);
+			var monster = _monsterFactory.CreateMonster(transform.position, _moveGoTo);
 			if (monster != null)
 			{
 				monster.OnDied += OnMonsterDied;

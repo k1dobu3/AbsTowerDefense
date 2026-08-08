@@ -14,14 +14,14 @@ namespace AbsTowerDefense.MonsterLogic
 			_monsterData = monsterData;
 		}
 
-		public Monster CreateMonster(Vector3 spawnPosition, GameObject moveTarget)
+		public Monster CreateMonster(Vector3 spawnPosition, Collider monsterGoTo)
 		{
 			Monster monster = _monsterPool.GetObject();
 			if (monster == null)
 			{
 				return null;
 			}
-			monster.Initialize(spawnPosition, moveTarget.transform, _monsterData);
+			monster.Initialize(spawnPosition, monsterGoTo, _monsterData);
 			return monster;
 		}
 

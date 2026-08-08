@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using System;
-using AbsTowerDefense.GameObjectPool;
 using AbsTowerDefense.GameObjectPool.Abstract;
 using AbsTowerDefense.TowersLogic;
 using AbsTowerDefense.MonsterLogic.Abstract;
@@ -13,12 +12,10 @@ namespace AbsTowerDefense.MonsterLogic
 
 		public float speed { get {return _speed;} set {_speed = value;} }
 		public float hp { get {return _hp;} set {_hp = value;} }
-		// public Rigidbody rb { get {return _rb;}}
 
-		private GameObject _moveTarget;
+		private Collider _monsterGoTo;
 		private float _speed = 0.1f;
 		private float _hp;
-		private float _reachDistance = 0.5f;
 		private bool _isDead;
 
 		[SerializeField]
@@ -30,10 +27,10 @@ namespace AbsTowerDefense.MonsterLogic
 		public float Speed => _speed;
 		public bool IsAlive => _hp > 0 && gameObject.activeInHierarchy;
 
-		public void Initialize(Vector3 spawnPosition, Transform moveTarget, MonsterDataSO monsterData)
+		public void Initialize(Vector3 spawnPosition, Collider monsterGoTo, MonsterDataSO monsterData)
 		{
 			transform.position = spawnPosition;
-			_moveTarget = moveTarget.gameObject;
+			_monsterGoTo = monsterGoTo;
 			_speed = monsterData.speed;
 			_hp = monsterData.maxHP;
 			_rb.useGravity = false;
@@ -43,11 +40,11 @@ namespace AbsTowerDefense.MonsterLogic
 		{
 			get
 			{
-				if (_moveTarget == null)
+				if (_monsterGoTo == null)
 				{
 					return Vector3.zero;
 				}
-				return (_moveTarget.transform.position - transform.position).normalized;
+				return (_monsterGoTo.transform.position - transform.position).normalized;
 			}
 		}
 
@@ -58,29 +55,22 @@ namespace AbsTowerDefense.MonsterLogic
 
 		public void OnDespawn()
 		{
-			_moveTarget = null;
+			_monsterGoTo = null;
 			_isDead = true;
 		}
 
 		private void Update()
 		{
-			if (_moveTarget == null)
-				return;
-
-			if (Vector3.Distance(transform.position, _moveTarget.transform.position) <= _reachDistance)
+			if (_monsterGoTo == null)
 			{
-				OnDespawn();
 				return;
 			}
-			else
-			{
-				PawnMove();
-			}
+			PawnMove();
 		}
 
 		private void PawnMove()
 		{
-			transform.position = Vector3.MoveTowards(transform.position, _moveTarget.transform.position, Time.deltaTime * _speed);
+			transform.position = Vector3.MoveTowards(transform.position, _monsterGoTo.transform.position, Time.deltaTime * _speed);
 		}
 
 		private void TakeDamage(float damage, bool systemKill)
@@ -109,6 +99,10 @@ namespace AbsTowerDefense.MonsterLogic
 
 		private void OnTriggerEnter(Collider other)
 		{
+			if (other.CompareTag("SystemEnemyCleaner"))
+			{
+				Die();
+			}
 			if (other.CompareTag("Projectile"))
 			{
 				BaseProjectile currentProjectile = other.GetComponent<BaseProjectile>();
