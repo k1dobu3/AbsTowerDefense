@@ -73,16 +73,13 @@ namespace AbsTowerDefense.MonsterLogic
 			transform.position = Vector3.MoveTowards(transform.position, _monsterGoTo.transform.position, Time.deltaTime * _speed);
 		}
 
-		private void TakeDamage(float damage, bool systemKill)
+		private void TakeDamage(float damage)
 		{
 			_hp -= damage;
 			if (_hp <= 0f)
 			{
 				_hp = 0f;
-				if (!systemKill)
-				{
-					OnAnyMonsterDeath?.Invoke();
-				}
+				OnAnyMonsterDeath?.Invoke();
 				Die();
 			}
 		}
@@ -108,7 +105,7 @@ namespace AbsTowerDefense.MonsterLogic
 				BaseProjectile currentProjectile = other.GetComponent<BaseProjectile>();
 				if (currentProjectile != null)
 				{
-					TakeDamage(currentProjectile.damage, false);
+					TakeDamage(currentProjectile.damage);
 					currentProjectile.OnDespawn();	
 				}
 			}

@@ -14,6 +14,10 @@ namespace AbsTowerDefense.TowersLogic
 		private float _gravity;
 		private bool _canAimBarrel = false;
 		private const float forceReserveThreshold = 10f;
+
+		[Header("Default Tower Rotation Settings")]
+		[SerializeField]
+		private float _defaultGunHeadAngle = 0f;
 		
 		[Header("Default Aim Line")]
 		[SerializeField]
@@ -90,7 +94,7 @@ namespace AbsTowerDefense.TowersLogic
 			IsBarrelAimed = false;
 			if (currentTower.towerGunHeadMoveable)
 			{
-				Quaternion defaultRot = Quaternion.Euler(Vector3.zero);
+				Quaternion defaultRot = Quaternion.Euler(new Vector3(0f, _defaultGunHeadAngle, 0f));
 				transform.rotation = Quaternion.RotateTowards(transform.rotation, defaultRot, Time.deltaTime * currentTower.rotationSpeed);
 			}
 			Quaternion defaultBarrelRot = Quaternion.Euler(Vector3.zero);
