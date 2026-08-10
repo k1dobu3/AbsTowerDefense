@@ -18,6 +18,8 @@ namespace AbsTowerDefense.TowersLogic
 		[SerializeField]
 		private AmmoSO _currentAmmo;
 		[SerializeField]
+		private int _maxPoolSize = 10;
+		[SerializeField]
 		private GameObject _halo;
 
 		public bool TryShoot(float fireSpeed, IDamageable target, float startMuzzleSpeed, Vector3 predictedPos)
@@ -33,7 +35,7 @@ namespace AbsTowerDefense.TowersLogic
 
 		private void Start()
 		{
-			_pool = PoolManager.Instance.CreateOrGetPool<GuidedProjectile>(_currentAmmo.ammoProjectilePrefab, 5, $"{_currentAmmo.ammoName}");
+			_pool = PoolManager.Instance.CreateOrGetPool<GuidedProjectile>(_currentAmmo.ammoProjectilePrefab, 5, _maxPoolSize, $"{_currentAmmo.ammoName}");
 			_projectileFactory = new ProjectileFactory<GuidedProjectile>(_pool, _currentAmmo);
 		}
 
@@ -49,7 +51,7 @@ namespace AbsTowerDefense.TowersLogic
 			GuidedProjectile projectile = _projectileFactory.CreateProjectile(target);
 			if (projectile == null)
 			{
-				Debug.LogError("Выстрел отменен: projectile == null");
+				Debug.LogWarning("Выстрел отменен: projectile == null");
 				_canShoot = true;
 				return;
 			}

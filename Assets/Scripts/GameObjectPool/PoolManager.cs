@@ -20,7 +20,7 @@ namespace AbsTowerDefense.GameObjectPool
 			Instance = this;
 		}
 
-		public GameObjectPool<T> CreateOrGetPool<T>(GameObject prefab, int size = 5, string name = "Pool") where T : Component, IPoolable
+		public GameObjectPool<T> CreateOrGetPool<T>(GameObject prefab, int size = 5, int maxPoolSize = 10, string name = "Pool") where T : Component, IPoolable
 		{
 			if (prefab == null)
 			{
@@ -32,7 +32,7 @@ namespace AbsTowerDefense.GameObjectPool
 				return existing as GameObjectPool<T>;
 			}
 
-			var pool = new GameObjectPool<T>(prefab, size, name ?? prefab.name);
+			var pool = new GameObjectPool<T>(prefab, size, maxPoolSize, name ?? prefab.name);
 			_pools[prefab] = pool;
 			return pool;
 		}

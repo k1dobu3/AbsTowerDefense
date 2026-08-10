@@ -14,6 +14,8 @@ namespace AbsTowerDefense.MonsterLogic
 		[SerializeField]
 		public float _interval = 3;
 		[SerializeField]
+		private int _poolSize = 10;
+		[SerializeField, Tooltip("+ 1 от значения PoolSize")]
 		private int _maxPoolSize = 10;
 		[SerializeField]
 		private Collider _moveGoTo;
@@ -24,7 +26,7 @@ namespace AbsTowerDefense.MonsterLogic
 
 		private void Awake()
 		{
-			var _monsterPool = PoolManager.Instance.CreateOrGetPool<Monster>(_monsterData.monsterPrefab, _maxPoolSize, $"{_monsterData.monsterName}");
+			var _monsterPool = PoolManager.Instance.CreateOrGetPool<Monster>(_monsterData.monsterPrefab, _poolSize, _maxPoolSize, $"{_monsterData.monsterName}");
 			_monsterFactory = new MonsterFactory(_monsterPool, _monsterData);
 		}
 

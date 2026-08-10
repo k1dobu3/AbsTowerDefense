@@ -18,6 +18,8 @@ namespace AbsTowerDefense.TowersLogic
 		[SerializeField]
 		private AmmoSO _currentAmmo;
 		[SerializeField]
+		private int _maxPoolSize = 10;
+		[SerializeField]
 		private Transform _shootStartPoint;
 		[SerializeField]
 		private GameObject _sparkles;
@@ -35,7 +37,7 @@ namespace AbsTowerDefense.TowersLogic
 
 		private void Awake()
 		{
-			_pool = PoolManager.Instance.CreateOrGetPool<CannonProjectile>(_currentAmmo.ammoProjectilePrefab, 5, $"{_currentAmmo.ammoName}");
+			_pool = PoolManager.Instance.CreateOrGetPool<CannonProjectile>(_currentAmmo.ammoProjectilePrefab, 5, _maxPoolSize, $"{_currentAmmo.ammoName}");
 			_projectileFactory = new ProjectileFactory<CannonProjectile>(_pool, _currentAmmo);
 		}
 
@@ -51,7 +53,7 @@ namespace AbsTowerDefense.TowersLogic
 			CannonProjectile projectile = _projectileFactory.CreateProjectile();
 			if (projectile == null)
 			{
-				Debug.LogError("Выстрел отменен: projectile == null");
+				Debug.LogWarning("Выстрел отменен: projectile == null");
 				_canShoot = true;
 				return;
 			}

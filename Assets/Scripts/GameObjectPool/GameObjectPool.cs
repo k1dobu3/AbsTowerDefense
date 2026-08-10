@@ -10,8 +10,10 @@ namespace AbsTowerDefense.GameObjectPool
 		private readonly Transform parentContainer;
 		private readonly Queue<T> pool = new();
 		private int _initialSize;
+		private int _maxPoolSize;
+		private int _currentTotalCount = 0; 
 
-		public GameObjectPool(GameObject prefab, int initialMaxSize, string poolName = null)
+		public GameObjectPool(GameObject prefab, int initialMaxSize, int maxPoolSize, string poolName = null)
 		{
 			if (prefab == null)
 			{
@@ -20,6 +22,11 @@ namespace AbsTowerDefense.GameObjectPool
 			}
 			_prefab = prefab;
 			_initialSize = Mathf.Max(initialMaxSize, 1);
+			if (maxPoolSize == initialMaxSize)
+			{
+				_maxPoolSize = maxPoolSize + 2;
+			}
+			_currentTotalCount = _initialSize;
 			string wrapperName = string.IsNullOrEmpty(poolName) ? $"{typeof(T).Name} Pool" : poolName;
 			var wrapperGOP = new GameObject(wrapperName);
 			parentContainer = wrapperGOP.transform;
@@ -40,12 +47,15 @@ namespace AbsTowerDefense.GameObjectPool
 			GameObject objGO = GameObject.Instantiate(_prefab, parentContainer);
 			T obj = objGO.GetComponent<T>();
 			obj.gameObject.SetActive(false);
-			pool.Enqueue(obj);
 			return obj;
 		}
 
 		public T GetObject()
 		{
+			if ((_currentTotalCount == _maxPoolSize) && (pool.Count == 0))
+			{
+				return null;
+			}
 			T obj = null;
 			if (pool.Count > 0)
 			{
@@ -54,6 +64,10 @@ namespace AbsTowerDefense.GameObjectPool
 			else
 			{
 				obj = CreateNewInstance();
+				if (obj != null)
+				{
+					_currentTotalCount++;
+				}
 			}
 			if (obj != null)
 			{
