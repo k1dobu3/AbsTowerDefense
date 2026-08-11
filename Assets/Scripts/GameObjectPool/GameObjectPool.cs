@@ -22,11 +22,7 @@ namespace AbsTowerDefense.GameObjectPool
 			}
 			_prefab = prefab;
 			_initialSize = Mathf.Max(initialMaxSize, 1);
-			if (maxPoolSize == initialMaxSize)
-			{
-				_maxPoolSize = maxPoolSize + 2;
-			}
-			_currentTotalCount = _initialSize;
+			_maxPoolSize = maxPoolSize == initialMaxSize ? maxPoolSize + 1 : maxPoolSize;
 			string wrapperName = string.IsNullOrEmpty(poolName) ? $"{typeof(T).Name} Pool" : poolName;
 			var wrapperGOP = new GameObject(wrapperName);
 			parentContainer = wrapperGOP.transform;
@@ -38,24 +34,26 @@ namespace AbsTowerDefense.GameObjectPool
 		{
 			for (int i = 0; i != _initialSize; i++)
 			{
-				CreateNewInstance();
+				T obj = CreateNewInstance();
+				pool.Enqueue(obj);
 			}
 		}
 
 		private T CreateNewInstance()
 		{
+			if (_currentTotalCount >= _maxPoolSize)
+			{
+				return null;
+			}
 			GameObject objGO = GameObject.Instantiate(_prefab, parentContainer);
 			T obj = objGO.GetComponent<T>();
 			obj.gameObject.SetActive(false);
+			_currentTotalCount++;
 			return obj;
 		}
 
 		public T GetObject()
 		{
-			if ((_currentTotalCount == _maxPoolSize) && (pool.Count == 0))
-			{
-				return null;
-			}
 			T obj = null;
 			if (pool.Count > 0)
 			{
@@ -64,10 +62,6 @@ namespace AbsTowerDefense.GameObjectPool
 			else
 			{
 				obj = CreateNewInstance();
-				if (obj != null)
-				{
-					_currentTotalCount++;
-				}
 			}
 			if (obj != null)
 			{
@@ -99,6 +93,7 @@ namespace AbsTowerDefense.GameObjectPool
 					GameObject.Destroy(obj.gameObject);
 				}
 			}
+			_currentTotalCount = 0;
 		}
 	}
 }
